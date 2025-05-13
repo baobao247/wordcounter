@@ -32,30 +32,14 @@
 
     textarea {
       width: 100%;
-      height: 200px;
+      min-height: 200px;
       padding: 12px;
       font-size: 16px;
       border: 1px solid #ccc;
       border-radius: 8px;
       resize: vertical;
       font-family: "Times New Roman", Times, serif;
-    }
-
-    button {
-      width: 100%;
-      padding: 12px;
-      margin-top: 15px;
-      font-size: 16px;
-      background-color: #28a745;
-      color: white;
-      border: none;
-      border-radius: 8px;
-      cursor: pointer;
-      font-family: "Times New Roman", Times, serif;
-    }
-
-    button:hover {
-      background-color: #218838;
+      box-sizing: border-box;
     }
 
     .output {
@@ -76,7 +60,7 @@
 
     @media (max-width: 600px) {
       textarea {
-        height: 150px;
+        min-height: 180px;
       }
 
       .output {
@@ -88,24 +72,35 @@
 <body>
   <div class="container">
     <h2>Bộ đếm từ</h2>
-    <textarea id="doanVan" placeholder="Nhập đoạn văn vào đây..."></textarea>
-    <button onclick="demSoTu()">Đếm số từ</button>
-    <div id="ketQua" class="output"></div>
+    <textarea id="doanVan" placeholder="Nhập hoặc dán đoạn văn..."></textarea>
+    <div id="ketQua" class="output">Số từ: 0 chữ</div>
   </div>
 
-  <div class="version">v0.0.2</div>
+  <div class="version">v0.0.3</div>
 
   <script>
+    const textarea = document.getElementById("doanVan");
+    const ketQua = document.getElementById("ketQua");
+
     function demSoTu() {
-      let text = document.getElementById("doanVan").value.trim();
-      
-      // Xử lý xóa dấu câu dính vào từ
-      text = text.replace(/[.,!?;:"“”‘’(){}]+/g, " ");
+      let text = textarea.value.trim();
+
+      // Thay thế các ký tự đặc biệt bằng khoảng trắng
+      text = text.replace(/[\u2019\u2018\u201C\u201D]/g, "'"); // chuyển về dạng dấu nháy chuẩn
+      text = text.replace(/[.,!?;:"“”‘’(){}]/g, " ");
+      text = text.replace(/['’"]/g, ""); // bỏ dấu nháy không cần thiết
+
+      // Đếm từ
       let words = text.split(/\s+/).filter(word => word.length > 0);
-      
       let soTu = words.length;
-      document.getElementById("ketQua").innerHTML = `Số từ trong đoạn văn: <strong>${soTu}</strong>`;
+
+      ketQua.innerHTML = `Số từ: <strong>${soTu}</strong> chữ`;
     }
+
+    textarea.addEventListener("input", demSoTu);
+
+    // Gọi lần đầu nếu có nội dung mặc định
+    demSoTu();
   </script>
 </body>
 </html>
