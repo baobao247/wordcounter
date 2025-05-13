@@ -110,7 +110,7 @@
     function demSoTuVaKyTu() {
       let text = textarea.value.trim();
 
-      // Thay thế các ký tự đặc biệt bằng khoảng trắng
+      // Thay thế các ký tự đặc biệt bằng khoảng trắng để đếm từ
       text = text.replace(/[\u2019\u2018\u201C\u201D]/g, "'"); // chuyển về dạng dấu nháy chuẩn
       text = text.replace(/[.,!?;:"“”‘’(){}]/g, " ");
       text = text.replace(/['’"]/g, ""); // bỏ dấu nháy không cần thiết
@@ -119,8 +119,8 @@
       let words = text.split(/\s+/).filter(word => word.length > 0);
       let soTu = words.length;
 
-      // Đếm ký tự (bao gồm cả khoảng trắng)
-      let soKyTu = textarea.value.length;
+      // Đếm ký tự (không tính khoảng trắng)
+      let soKyTu = textarea.value.replace(/\s/g, '').length;
 
       ketQua.innerHTML = `Số từ: <strong>${soTu}</strong> từ<br>Số ký tự: <strong>${soKyTu}</strong>`;
     }
