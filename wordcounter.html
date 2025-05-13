@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <title>Tính điểm HK2 và Cuối kỳ</title>
+  <style>
+    body { font-family: Arial; padding: 20px; }
+    input, button { margin: 5px; padding: 5px; }
+  </style>
+</head>
+<body>
+  <h2>Tính điểm trung bình cả năm</h2>
+  <label>Nhập điểm trung bình HK1:</label>
+  <input type="number" id="dtb_hk1" step="0.1"><br>
+  <button onclick="tinhDTBNam()">Tính điểm HK2 cần đạt</button>
+  <div id="ketqua_hk2"></div>
+
+  <h2>Tính điểm cuối kỳ</h2>
+  <label>Nhập các điểm thường xuyên (cách nhau bởi dấu cách):</label><br>
+  <input type="text" id="diem_tx"><br>
+  <label>Nhập điểm giữa kỳ:</label>
+  <input type="number" id="diem_gk" step="0.1"><br>
+  <button onclick="tinhDiemCuoiKy()">Tính điểm cuối kỳ cần đạt</button>
+  <div id="ketqua_ck"></div>
+
+  <script>
+    let muc_tieu = [6.5, 8.0, 9.0];
+    let dtb_hk2_can_arr = [];
+
+    function tinhDTBNam() {
+      let dtb_hk1 = parseFloat(document.getElementById("dtb_hk1").value);
+      if (isNaN(dtb_hk1)) {
+        alert("Vui lòng nhập điểm HK1 hợp lệ");
+        return;
+      }
+
+      let output = "<ul>";
+      dtb_hk2_can_arr = [];
+
+      muc_tieu.forEach(muc => {
+        let dtb_hk2_can = ((muc * 3) - dtb_hk1) / 2;
+        dtb_hk2_can = Math.round(dtb_hk2_can * 10) / 10;
+        dtb_hk2_can_arr.push(dtb_hk2_can);
+        output += `<li>Để ĐTBCN ≥ ${muc}, cần ĐTBHK2 ≥ ${dtb_hk2_can}</li>`;
+      });
+
+      output += "</ul>";
+      document.getElementById("ketqua_hk2").innerHTML = output;
+    }
+
+    function tinhDiemCuoiKy() {
+      let diem_tx_str = document.getElementById("diem_tx").value.trim();
+      let diem_gk = parseFloat(document.getElementById("diem_gk").value);
+      if (!diem_tx_str || isNaN(diem_gk)) {
+        alert("Vui lòng nhập đầy đủ điểm thường xuyên và giữa kỳ!");
+        return;
+      }
+
+      let diem_tx = diem_tx_str.split(" ").map(Number);
+      if (diem_tx.some(isNaN)) {
+        alert("Điểm thường xuyên phải là số, cách nhau bởi dấu cách");
+        return;
+      }
+
+      let tong_tx = diem_tx.reduce((a, b) => a + b, 0);
+      let so_luong_tx = diem_tx.length;
+
+      let output = "<ul>";
+      muc_tieu.forEach((muc, i) => {
+        let tong_can = dtb_hk2_can_arr[i] * (so_luong_tx + 5);
+        let diem_ck_can = (tong_can - (tong_tx + 2 * diem_gk)) / 3;
+        diem_ck_can = Math.round(diem_ck_can * 10) / 10;
+        output += `<li>Để ĐTBHK2 ≥ ${muc}, cần điểm cuối kỳ ≥ ${diem_ck_can}</li>`;
+      });
+
+      output += "</ul>";
+      document.getElementById("ketqua_ck").innerHTML = output;
+    }
+  </script>
+</body>
+</html>
