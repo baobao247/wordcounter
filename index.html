@@ -1,0 +1,97 @@
+<!DOCTYPE html>
+<html lang="vi">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Đếm số từ trong đoạn văn</title>
+  <style>
+    body {
+      font-family: "Times New Roman", Times, serif;
+      background-color: #f4f6f9;
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+    }
+
+    .container {
+      background: #fff;
+      padding: 25px;
+      margin-top: 50px;
+      max-width: 600px;
+      width: 90%;
+      border-radius: 12px;
+      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+    }
+
+    h2 {
+      text-align: center;
+      color: #007bff;
+    }
+
+    textarea {
+      width: 100%;
+      height: 150px;
+      padding: 10px;
+      font-size: 16px;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      resize: vertical;
+      font-family: "Times New Roman", Times, serif;
+    }
+
+    button {
+      width: 100%;
+      padding: 12px;
+      margin-top: 15px;
+      font-size: 16px;
+      background-color: #28a745;
+      color: white;
+      border: none;
+      border-radius: 8px;
+      cursor: pointer;
+      font-family: "Times New Roman", Times, serif;
+    }
+
+    button:hover {
+      background-color: #218838;
+    }
+
+    .output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      font-size: 18px;
+      text-align: center;
+    }
+
+    @media (max-width: 600px) {
+      textarea {
+        height: 120px;
+      }
+
+      .output {
+        font-size: 16px;
+      }
+    }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>Đếm số từ trong đoạn văn</h2>
+    <textarea id="doanVan" placeholder="Nhập đoạn văn vào đây..."></textarea>
+    <button onclick="demSoTu()">Đếm số từ</button>
+    <div id="ketQua" class="output"></div>
+  </div>
+
+  <script>
+    function demSoTu() {
+      let text = document.getElementById("doanVan").value.trim();
+      let words = text.split(/\s+/);
+      let soTu = text === "" ? 0 : words.length;
+      document.getElementById("ketQua").innerHTML = `Số từ trong đoạn văn: <strong>${soTu}</strong>`;
+    }
+  </script>
+</body>
+</html>
