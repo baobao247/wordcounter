@@ -42,6 +42,25 @@
       box-sizing: border-box;
     }
 
+    .button-container {
+      text-align: right;
+      margin-top: 10px;
+    }
+
+    .clear-btn {
+      background-color: #ff0000;
+      color: #fff;
+      border: none;
+      padding: 8px 12px;
+      border-radius: 5px;
+      cursor: pointer;
+      font-size: 14px;
+    }
+
+    .clear-btn:hover {
+      background-color: #cc0000;
+    }
+
     .output {
       margin-top: 20px;
       padding: 15px;
@@ -73,16 +92,22 @@
   <div class="container">
     <h2>Bộ đếm từ</h2>
     <textarea id="doanVan" placeholder="Nhập hoặc dán đoạn văn..."></textarea>
-    <div id="ketQua" class="output">Số từ: 0 chữ</div>
+    <div class="button-container">
+      <button class="clear-btn" onclick="xoaVanBan()">Xóa văn bản</button>
+    </div>
+    <div id="ketQua" class="output">
+      Số từ: <strong>0</strong> từ<br>
+      Số ký tự: <strong>0</strong>
+    </div>
   </div>
 
-  <div class="version">v0.0.3</div>
+  <div class="version">v0.0.2</div>
 
   <script>
     const textarea = document.getElementById("doanVan");
     const ketQua = document.getElementById("ketQua");
 
-    function demSoTu() {
+    function demSoTuVaKyTu() {
       let text = textarea.value.trim();
 
       // Thay thế các ký tự đặc biệt bằng khoảng trắng
@@ -94,13 +119,21 @@
       let words = text.split(/\s+/).filter(word => word.length > 0);
       let soTu = words.length;
 
-      ketQua.innerHTML = `Số từ: <strong>${soTu}</strong> chữ`;
+      // Đếm ký tự (bao gồm cả khoảng trắng)
+      let soKyTu = textarea.value.length;
+
+      ketQua.innerHTML = `Số từ: <strong>${soTu}</strong> từ<br>Số ký tự: <strong>${soKyTu}</strong>`;
     }
 
-    textarea.addEventListener("input", demSoTu);
+    function xoaVanBan() {
+      textarea.value = "";
+      demSoTuVaKyTu();
+    }
+
+    textarea.addEventListener("input", demSoTuVaKyTu);
 
     // Gọi lần đầu nếu có nội dung mặc định
-    demSoTu();
+    demSoTuVaKyTu();
   </script>
 </body>
 </html>
