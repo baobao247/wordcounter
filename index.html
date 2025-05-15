@@ -268,7 +268,7 @@
               <button class="delete" onclick="xoaMotMuc(${index})">Xóa</button>
             </div>
             Thời gian: ${item.timestamp}<br>
-            Văn bản: ${item.text.replace(/\n/g, "<br>")}<br>
+            Văn bản: ${item.text.replace(/\n/g, "<br>")}<br> <!-- Hiển thị toàn bộ, thay \n bằng <br> -->
             Số từ: ${item.soTu} từ<br>
             Số ký tự: ${item.soKyTu}
           </li>`;
