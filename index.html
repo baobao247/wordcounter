@@ -3,7 +3,11 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta name="description" content="Công cụ đếm từ và ký tự tiếng Việt miễn phí.">
+  <meta name="keywords" content="đếm từ, đếm ký tự, công cụ văn bản, tiếng Việt">
   <title>Bộ đếm từ</title>
+  <!-- Font Awesome cho icon cây bút -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
   <style>
     body {
       font-family: "Times New Roman", Times, serif;
@@ -47,18 +51,49 @@
       margin-top: 10px;
     }
 
-    .clear-btn {
-      background-color: #ff0000;
+    button {
+      background-color: #007bff;
       color: #fff;
       border: none;
       padding: 8px 12px;
       border-radius: 5px;
       cursor: pointer;
       font-size: 14px;
+      margin-left: 10px;
     }
 
-    .clear-btn:hover {
+    button:hover {
+      background-color: #0056b3;
+    }
+
+    button.clear-btn {
+      background-color: #ff0000;
+    }
+
+    button.clear-btn:hover {
       background-color: #cc0000;
+    }
+
+    button.save-btn {
+      background-color: #28a745;
+    }
+
+    button.save-btn:hover {
+      background-color: #218838;
+    }
+
+    button.delete {
+      background-color: #ff4444;
+    }
+
+    button.delete:hover {
+      background-color: #cc0000;
+    }
+
+    button.edit {
+      background-color: #007bff;
+      padding: 5px 10px;
+      font-size: 12px;
     }
 
     .output {
@@ -70,11 +105,46 @@
       text-align: center;
     }
 
+    .error {
+      color: red;
+      font-size: 14px;
+      margin-top: 10px;
+      text-align: center;
+    }
+
     .version {
       text-align: center;
       font-size: 12px;
       color: #888;
       margin: 20px 0;
+    }
+
+    ul {
+      padding-left: 20px;
+      margin-top: 15px;
+    }
+
+    li {
+      margin-bottom: 15px;
+      padding: 10px;
+      border: 1px solid #ddd;
+      border-radius: 8px;
+    }
+
+    .history-title {
+      display: flex;
+      align-items: center;
+      margin-bottom: 5px;
+    }
+
+    .history-title input {
+      width: 150px;
+      margin-right: 10px;
+      display: none;
+    }
+
+    .history-title span {
+      font-weight: bold;
     }
 
     @media (max-width: 600px) {
@@ -94,24 +164,32 @@
     <textarea id="doanVan" placeholder="Nhập hoặc dán đoạn văn..."></textarea>
     <div class="button-container">
       <button class="clear-btn" onclick="xoaVanBan()">Xóa văn bản</button>
+      <button onclick="saoChep()">Sao chép</button>
+      <button class="save-btn" onclick="luuLichSu()">Lưu văn bản</button>
     </div>
     <div id="ketQua" class="output">
       Số từ: <strong>0</strong> từ<br>
       Số ký tự: <strong>0</strong>
     </div>
+    <div id="error" class="error"></div>
+
+    <h2>Lịch sử văn bản</h2>
+    <button class="delete" onclick="xoaLichSu()">Xóa toàn bộ lịch sử</button>
+    <div id="lich_su" class="output"></div>
   </div>
 
-  <div class="version">v0.0.2</div>
+  <div class="version">v0.0.3</div>
 
   <script>
     const textarea = document.getElementById("doanVan");
     const ketQua = document.getElementById("ketQua");
 
+    // Hàm đếm từ và ký tự
     function demSoTuVaKyTu() {
       let text = textarea.value.trim();
 
       // Đếm từ: chỉ giữ chữ cái (bao gồm tiếng Việt) và bỏ số, dấu câu, ký tự đặc biệt
-      let cleanedText = text.replace(/[^a-zA-ZÀ-ỹ\s]/g, " "); // Giữ chữ cái, dấu tiếng Việt, khoảng trắng
+      let cleanedText = text.replace(/[^a-zA-ZÀ-ỹ\s]/g, " ");
       let words = cleanedText.split(/\s+/).filter(word => word.length > 0 && /[a-zA-ZÀ-ỹ]/.test(word));
       let soTu = words.length;
 
@@ -121,12 +199,122 @@
       ketQua.innerHTML = `Số từ: <strong>${soTu}</strong> từ<br>Số ký tự: <strong>${soKyTu}</strong>`;
     }
 
+    // Hàm xóa văn bản
     function xoaVanBan() {
       textarea.value = "";
       demSoTuVaKyTu();
     }
 
+    // Hàm sao chép văn bản
+    function saoChep() {
+      const text = textarea.value;
+      if (!text.trim()) {
+        showError("Vui lòng nhập văn bản trước khi sao chép.");
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        ketQua.innerHTML += `<br><span style="color: green;">Đã sao chép!</span>`;
+        setTimeout(demSoTuVaKyTu, 2000);
+      });
+    }
+
+    // Hàm hiển thị lỗi
+    function showError(message) {
+      document.getElementById("error").innerHTML = message;
+      setTimeout(() => document.getElementById("error").innerHTML = "", 3000);
+    }
+
+    // Hàm lưu lịch sử
+    function luuLichSu() {
+      const text = textarea.value.trim();
+      if (!text) {
+        showError("Vui lòng nhập văn bản trước khi lưu.");
+        return;
+      }
+      const soTu = ketQua.querySelector("strong").textContent;
+      const soKyTu = ketQua.querySelectorAll("strong")[1].textContent;
+      let lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
+      lichSu.push({
+        title: "Văn bản", // Tên mặc định
+        text: text.slice(0, 100) + (text.length > 100 ? "..." : ""), // Giới hạn hiển thị
+        soTu,
+        soKyTu,
+        timestamp: new Date().toLocaleString("vi-VN")
+      });
+      localStorage.setItem("lichSuVanBan", JSON.stringify(lichSu));
+      hienThiLichSu();
+    }
+
+    // Hàm hiển thị lịch sử
+    function hienThiLichSu() {
+      const lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
+      let output = "<ul>";
+      lichSu.forEach((item, index) => {
+        output += `
+          <li>
+            <div class="history-title">
+              <span id="title_${index}">${item.title}</span>
+              <input id="input_${index}" value="${item.title}" type="text">
+              <button class="edit" onclick="toggleEditTitle(${index})"><i class="fas fa-pencil-alt"></i></button>
+              <button class="delete" onclick="xoaMotMuc(${index})">Xóa</button>
+            </div>
+            Thời gian: ${item.timestamp}<br>
+            Văn bản: ${item.text}<br>
+            Số từ: ${item.soTu} từ<br>
+            Số ký tự: ${item.soKyTu}
+          </li>`;
+      });
+      output += "</ul>";
+      document.getElementById("lich_su").innerHTML = output;
+    }
+
+    // Hàm chỉnh sửa tiêu đề
+    function toggleEditTitle(index) {
+      const titleSpan = document.getElementById(`title_${index}`);
+      const titleInput = document.getElementById(`input_${index}`);
+      if (titleInput.style.display === "none" || !titleInput.style.display) {
+        titleSpan.style.display = "none";
+        titleInput.style.display = "inline-block";
+        titleInput.focus();
+        titleInput.onblur = () => saveTitle(index);
+        titleInput.onkeypress = (e) => {
+          if (e.key === "Enter") saveTitle(index);
+        };
+      }
+    }
+
+    // Hàm lưu tiêu đề sau khi chỉnh sửa
+    function saveTitle(index) {
+      const titleInput = document.getElementById(`input_${index}`);
+      const titleSpan = document.getElementById(`title_${index}`);
+      let lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
+      const newTitle = titleInput.value.trim() || "Văn bản"; // Mặc định nếu rỗng
+      lichSu[index].title = newTitle;
+      localStorage.setItem("lichSuVanBan", JSON.stringify(lichSu));
+      titleSpan.textContent = newTitle;
+      titleSpan.style.display = "inline";
+      titleInput.style.display = "none";
+    }
+
+    // Hàm xóa một mục lịch sử
+    function xoaMotMuc(index) {
+      let lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
+      lichSu.splice(index, 1);
+      localStorage.setItem("lichSuVanBan", JSON.stringify(lichSu));
+      hienThiLichSu();
+    }
+
+    // Hàm xóa toàn bộ lịch sử
+    function xoaLichSu() {
+      localStorage.removeItem("lichSuVanBan");
+      hienThiLichSu();
+    }
+
+    // Sự kiện input cho đếm thời gian thực
     textarea.addEventListener("input", demSoTuVaKyTu);
+
+    // Hiển thị lịch sử khi tải trang
+    hienThiLichSu();
 
     // Gọi lần đầu nếu có nội dung mặc định
     demSoTuVaKyTu();
