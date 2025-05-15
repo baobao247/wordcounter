@@ -96,6 +96,17 @@
       font-size: 12px;
     }
 
+    button.copy {
+      background-color: #17a2b8;
+      padding: 5px 10px;
+      font-size: 12px;
+      margin-left: 5px;
+    }
+
+    button.copy:hover {
+      background-color: #138496;
+    }
+
     .output {
       margin-top: 20px;
       padding: 15px;
@@ -214,7 +225,7 @@
       demSoTuVaKyTu();
     }
 
-    // Hàm sao chép văn bản
+    // Hàm sao chép văn bản từ textarea
     function saoChep() {
       const text = textarea.value;
       if (!text.trim()) {
@@ -266,15 +277,33 @@
               <input id="input_${index}" value="${item.title}" type="text">
               <button class="edit" onclick="toggleEditTitle(${index})"><i class="fas fa-pencil-alt"></i></button>
               <button class="delete" onclick="xoaMotMuc(${index})">Xóa</button>
+              <button class="copy" onclick="saoChepTuLichSu(${index})">Sao chép</button>
             </div>
             Thời gian: ${item.timestamp}<br>
-            Văn bản: ${item.text.replace(/\n/g, "<br>")}<br> <!-- Hiển thị toàn bộ, thay \n bằng <br> -->
+            Văn bản: ${item.text.replace(/\n/g, "<br>")}<br>
             Số từ: ${item.soTu} từ<br>
             Số ký tự: ${item.soKyTu}
           </li>`;
       });
       output += "</ul>";
       document.getElementById("lich_su").innerHTML = output;
+    }
+
+    // Hàm sao chép văn bản từ lịch sử
+    function saoChepTuLichSu(index) {
+      const lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
+      const text = lichSu[index].text;
+      if (!text) {
+        showError("Không có văn bản để sao chép.");
+        return;
+      }
+      navigator.clipboard.writeText(text).then(() => {
+        const li = document.getElementsByTagName("li")[index];
+        li.innerHTML += `<br><span style="color: green;">Đã sao chép!</span>`;
+        setTimeout(() => {
+          hienThiLichSu(); // Làm mới để xóa thông báo
+        }, 2000);
+      });
     }
 
     // Hàm chỉnh sửa tiêu đề
