@@ -105,6 +105,15 @@
       text-align: center;
     }
 
+    .history-output {
+      margin-top: 20px;
+      padding: 15px;
+      background: #f0f0f0;
+      border-radius: 8px;
+      font-size: 16px;
+      text-align: left; /* Căn trái cho lịch sử */
+    }
+
     .error {
       color: red;
       font-size: 14px;
@@ -175,7 +184,7 @@
 
     <h2>Lịch sử văn bản</h2>
     <button class="delete" onclick="xoaLichSu()">Xóa toàn bộ lịch sử</button>
-    <div id="lich_su" class="output"></div>
+    <div id="lich_su" class="history-output"></div>
   </div>
 
   <div class="version">v0.0.3</div>
@@ -236,7 +245,7 @@
       let lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
       lichSu.push({
         title: "Văn bản", // Tên mặc định
-        text: text.slice(0, 100) + (text.length > 100 ? "..." : ""), // Giới hạn hiển thị
+        text: text, // Lưu toàn bộ văn bản
         soTu,
         soKyTu,
         timestamp: new Date().toLocaleString("vi-VN")
@@ -259,7 +268,7 @@
               <button class="delete" onclick="xoaMotMuc(${index})">Xóa</button>
             </div>
             Thời gian: ${item.timestamp}<br>
-            Văn bản: ${item.text}<br>
+            Văn bản: ${item.text.replace(/\n/g, "<br>")}<br>
             Số từ: ${item.soTu} từ<br>
             Số ký tự: ${item.soKyTu}
           </li>`;
