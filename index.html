@@ -1,361 +1,769 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
-  <meta name="description" content="Công cụ đếm từ và ký tự tiếng Việt miễn phí.">
-  <meta name="keywords" content="đếm từ, đếm ký tự, công cụ văn bản, tiếng Việt">
-  <title>Bộ đếm từ</title>
-  <!-- Font Awesome cho icon cây bút -->
-  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-  <style>
-    body {
-      font-family: "Times New Roman", Times, serif;
-      background-color: #f4f6f9;
-      margin: 0;
-      padding: 0;
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="description" content="Công cụ đếm từ và ký tự tiếng Việt miễn phí, nhiều tính năng thông minh">
+    <meta name="keywords" content="đếm từ, đếm ký tự, công cụ văn bản, tiếng Việt, xử lý văn bản">
+    <title>Bộ đếm từ Pro</title>
+    <!-- Google Fonts & Font Awesome -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+    <style>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+        }
 
-    .container {
-      background: #fff;
-      padding: 25px;
-      margin: 50px auto 20px;
-      max-width: 700px;
-      width: 90%;
-      border-radius: 12px;
-      box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-    }
+        :root {
+            --bg-gradient: linear-gradient(145deg, #f3f4f6, #ffffff);
+            --card-bg: #ffffff;
+            --text-primary: #1f2937;
+            --text-secondary: #4b5563;
+            --border: #e5e7eb;
+            --accent: #3b82f6;
+            --accent-hover: #2563eb;
+            --danger: #ef4444;
+            --danger-hover: #dc2626;
+            --success: #10b981;
+            --success-hover: #059669;
+            --history-bg: #f9fafb;
+            --shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
+        }
 
-    h2 {
-      text-align: center;
-      color: #007bff;
-    }
+        body.dark {
+            --bg-gradient: linear-gradient(145deg, #1f2937, #111827);
+            --card-bg: #1f2937;
+            --text-primary: #f9fafb;
+            --text-secondary: #d1d5db;
+            --border: #374151;
+            --history-bg: #111827;
+            --shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
+        }
 
-    textarea {
-      width: 100%;
-      min-height: 200px;
-      padding: 12px;
-      font-size: 16px;
-      border: 1px solid #ccc;
-      border-radius: 8px;
-      resize: vertical;
-      font-family: "Times New Roman", Times, serif;
-      box-sizing: border-box;
-    }
+        body {
+            font-family: 'Poppins', sans-serif;
+            background: var(--bg-gradient);
+            color: var(--text-primary);
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            transition: background 0.3s, color 0.3s;
+            padding: 20px;
+        }
 
-    .button-container {
-      text-align: right;
-      margin-top: 10px;
-    }
+        .container {
+            max-width: 1000px;
+            margin: 0 auto;
+            width: 100%;
+        }
 
-    button {
-      background-color: #007bff;
-      color: #fff;
-      border: none;
-      padding: 8px 12px;
-      border-radius: 5px;
-      cursor: pointer;
-      font-size: 14px;
-      margin-left: 10px;
-    }
+        .card {
+            background: var(--card-bg);
+            border-radius: 24px;
+            padding: 25px;
+            box-shadow: var(--shadow);
+            margin-bottom: 25px;
+            transition: background 0.3s, box-shadow 0.3s;
+            border: 1px solid var(--border);
+        }
 
-    button:hover {
-      background-color: #0056b3;
-    }
+        .header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+            gap: 15px;
+        }
 
-    button.clear-btn {
-      background-color: #ff0000;
-    }
+        h2 {
+            font-weight: 600;
+            font-size: 1.8rem;
+            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
 
-    button.clear-btn:hover {
-      background-color: #cc0000;
-    }
+        .theme-toggle {
+            background: var(--border);
+            border: none;
+            border-radius: 40px;
+            width: 50px;
+            height: 26px;
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 3px;
+            cursor: pointer;
+            position: relative;
+        }
 
-    button.save-btn {
-      background-color: #28a745;
-    }
+        .theme-toggle span {
+            font-size: 14px;
+            width: 20px;
+            height: 20px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            border-radius: 50%;
+            transition: 0.2s;
+        }
 
-    button.save-btn:hover {
-      background-color: #218838;
-    }
+        .theme-toggle .active {
+            background: var(--accent);
+            color: white;
+        }
 
-    button.delete {
-      background-color: #ff4444;
-    }
+        textarea {
+            width: 100%;
+            min-height: 250px;
+            padding: 16px;
+            font-size: 16px;
+            border: 2px solid var(--border);
+            border-radius: 16px;
+            background: var(--card-bg);
+            color: var(--text-primary);
+            resize: vertical;
+            font-family: 'Poppins', sans-serif;
+            transition: border 0.2s;
+            outline: none;
+        }
 
-    button.delete:hover {
-      background-color: #cc0000;
-    }
+        textarea:focus {
+            border-color: var(--accent);
+        }
 
-    button.edit {
-      background-color: #007bff;
-      padding: 5px 10px;
-      font-size: 12px;
-    }
+        .toolbar {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            margin: 15px 0 10px;
+            justify-content: center;
+        }
 
-    button.copy {
-      background-color: #17a2b8;
-      padding: 5px 10px;
-      font-size: 12px;
-      margin-left: 5px;
-    }
+        .btn {
+            padding: 10px 20px;
+            border: none;
+            border-radius: 40px;
+            font-weight: 500;
+            font-size: 14px;
+            display: inline-flex;
+            align-items: center;
+            gap: 8px;
+            cursor: pointer;
+            background: var(--border);
+            color: var(--text-primary);
+            transition: all 0.2s;
+            border: 1px solid transparent;
+        }
 
-    button.copy:hover {
-      background-color: #138496;
-    }
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        .btn-primary:hover {
+            background: var(--accent-hover);
+            transform: translateY(-2px);
+        }
 
-    .output {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      font-size: 18px;
-      text-align: center;
-    }
+        .btn-danger {
+            background: var(--danger);
+            color: white;
+        }
+        .btn-danger:hover {
+            background: var(--danger-hover);
+        }
 
-    .history-output {
-      margin-top: 20px;
-      padding: 15px;
-      background: #f0f0f0;
-      border-radius: 8px;
-      font-size: 16px;
-      text-align: left; /* Căn trái cho lịch sử */
-    }
+        .btn-success {
+            background: var(--success);
+            color: white;
+        }
+        .btn-success:hover {
+            background: var(--success-hover);
+        }
 
-    .error {
-      color: red;
-      font-size: 14px;
-      margin-top: 10px;
-      text-align: center;
-    }
+        .btn:hover {
+            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
+        }
 
-    .version {
-      text-align: center;
-      font-size: 12px;
-      color: #888;
-      margin: 20px 0;
-    }
+        .stats-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
+            gap: 15px;
+            margin: 20px 0;
+        }
 
-    ul {
-      padding-left: 20px;
-      margin-top: 15px;
-    }
+        .stat-item {
+            background: var(--history-bg);
+            border-radius: 16px;
+            padding: 15px 10px;
+            text-align: center;
+            border: 1px solid var(--border);
+        }
 
-    li {
-      margin-bottom: 15px;
-      padding: 10px;
-      border: 1px solid #ddd;
-      border-radius: 8px;
-    }
+        .stat-value {
+            font-size: 2rem;
+            font-weight: 700;
+            color: var(--accent);
+            line-height: 1.2;
+        }
 
-    .history-title {
-      display: flex;
-      align-items: center;
-      margin-bottom: 5px;
-    }
+        .stat-label {
+            font-size: 0.9rem;
+            color: var(--text-secondary);
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+        }
 
-    .history-title input {
-      width: 150px;
-      margin-right: 10px;
-      display: none;
-    }
+        .history-header {
+            display: flex;
+            flex-wrap: wrap;
+            justify-content: space-between;
+            align-items: center;
+            margin: 20px 0 15px;
+            gap: 15px;
+        }
 
-    .history-title span {
-      font-weight: bold;
-    }
+        .search-box {
+            flex: 1;
+            min-width: 200px;
+            display: flex;
+            align-items: center;
+            background: var(--history-bg);
+            border: 1px solid var(--border);
+            border-radius: 40px;
+            padding: 8px 16px;
+        }
 
-    @media (max-width: 600px) {
-      textarea {
-        min-height: 180px;
-      }
+        .search-box i {
+            color: var(--text-secondary);
+            margin-right: 8px;
+        }
 
-      .output {
-        font-size: 16px;
-      }
-    }
-  </style>
+        .search-box input {
+            background: transparent;
+            border: none;
+            outline: none;
+            width: 100%;
+            color: var(--text-primary);
+            font-size: 14px;
+        }
+
+        .history-list {
+            display: flex;
+            flex-direction: column;
+            gap: 15px;
+            max-height: 400px;
+            overflow-y: auto;
+            padding-right: 5px;
+        }
+
+        .history-item {
+            background: var(--history-bg);
+            border: 1px solid var(--border);
+            border-radius: 16px;
+            padding: 16px;
+            transition: 0.2s;
+        }
+
+        .history-item:hover {
+            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
+        }
+
+        .history-title {
+            display: flex;
+            align-items: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin-bottom: 8px;
+        }
+
+        .history-title .title-text {
+            font-weight: 600;
+            font-size: 1.1rem;
+            flex: 1;
+        }
+
+        .history-actions {
+            display: flex;
+            gap: 8px;
+        }
+
+        .history-actions button {
+            padding: 6px 12px;
+            font-size: 12px;
+        }
+
+        .history-preview {
+            color: var(--text-secondary);
+            font-size: 14px;
+            display: -webkit-box;
+            -webkit-line-clamp: 2;
+            -webkit-box-orient: vertical;
+            overflow: hidden;
+            margin: 8px 0 6px;
+        }
+
+        .history-meta {
+            display: flex;
+            gap: 20px;
+            font-size: 13px;
+            color: var(--text-secondary);
+        }
+
+        .toast {
+            position: fixed;
+            bottom: 30px;
+            left: 50%;
+            transform: translateX(-50%);
+            background: var(--card-bg);
+            color: var(--text-primary);
+            padding: 12px 24px;
+            border-radius: 40px;
+            box-shadow: var(--shadow);
+            border-left: 5px solid var(--success);
+            z-index: 999;
+            opacity: 0;
+            transition: opacity 0.3s;
+            pointer-events: none;
+        }
+
+        .toast.show {
+            opacity: 1;
+        }
+
+        .version {
+            text-align: center;
+            font-size: 12px;
+            color: var(--text-secondary);
+            margin-top: 20px;
+        }
+
+        @media (max-width: 600px) {
+            .stats-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            .toolbar .btn {
+                padding: 8px 12px;
+                font-size: 13px;
+            }
+        }
+    </style>
 </head>
 <body>
-  <div class="container">
-    <h2>Bộ đếm từ</h2>
-    <textarea id="doanVan" placeholder="Nhập hoặc dán đoạn văn..."></textarea>
-    <div class="button-container">
-      <button class="clear-btn" onclick="xoaVanBan()">Xóa văn bản</button>
-      <button onclick="saoChep()">Sao chép</button>
-      <button class="save-btn" onclick="luuLichSu()">Lưu văn bản</button>
-    </div>
-    <div id="ketQua" class="output">
-      Số từ: <strong>0</strong> từ<br>
-      Số ký tự: <strong>0</strong>
-    </div>
-    <div id="error" class="error"></div>
-
-    <h2>Lịch sử văn bản</h2>
-    <button class="delete" onclick="xoaLichSu()">Xóa toàn bộ lịch sử</button>
-    <div id="lich_su" class="history-output"></div>
-  </div>
-
-  <div class="version">v0.0.3</div>
-
-  <script>
-    const textarea = document.getElementById("doanVan");
-    const ketQua = document.getElementById("ketQua");
-
-    // Hàm đếm từ và ký tự
-    function demSoTuVaKyTu() {
-      let text = textarea.value.trim();
-
-      // Đếm từ: chỉ giữ chữ cái (bao gồm tiếng Việt) và bỏ số, dấu câu, ký tự đặc biệt
-      let cleanedText = text.replace(/[^a-zA-ZÀ-ỹ\s]/g, " ");
-      let words = cleanedText.split(/\s+/).filter(word => word.length > 0 && /[a-zA-ZÀ-ỹ]/.test(word));
-      let soTu = words.length;
-
-      // Đếm ký tự (không tính khoảng trắng)
-      let soKyTu = textarea.value.replace(/\s/g, '').length;
-
-      ketQua.innerHTML = `Số từ: <strong>${soTu}</strong> từ<br>Số ký tự: <strong>${soKyTu}</strong>`;
-    }
-
-    // Hàm xóa văn bản
-    function xoaVanBan() {
-      textarea.value = "";
-      demSoTuVaKyTu();
-    }
-
-    // Hàm sao chép văn bản từ textarea
-    function saoChep() {
-      const text = textarea.value;
-      if (!text.trim()) {
-        showError("Vui lòng nhập văn bản trước khi sao chép.");
-        return;
-      }
-      navigator.clipboard.writeText(text).then(() => {
-        ketQua.innerHTML += `<br><span style="color: green;">Đã sao chép!</span>`;
-        setTimeout(demSoTuVaKyTu, 2000);
-      });
-    }
-
-    // Hàm hiển thị lỗi
-    function showError(message) {
-      document.getElementById("error").innerHTML = message;
-      setTimeout(() => document.getElementById("error").innerHTML = "", 3000);
-    }
-
-    // Hàm lưu lịch sử
-    function luuLichSu() {
-      const text = textarea.value.trim();
-      if (!text) {
-        showError("Vui lòng nhập văn bản trước khi lưu.");
-        return;
-      }
-      const soTu = ketQua.querySelector("strong").textContent;
-      const soKyTu = ketQua.querySelectorAll("strong")[1].textContent;
-      let lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
-      lichSu.push({
-        title: "Văn bản", // Tên mặc định
-        text: text, // Lưu toàn bộ văn bản
-        soTu,
-        soKyTu,
-        timestamp: new Date().toLocaleString("vi-VN")
-      });
-      localStorage.setItem("lichSuVanBan", JSON.stringify(lichSu));
-      hienThiLichSu();
-    }
-
-    // Hàm hiển thị lịch sử
-    function hienThiLichSu() {
-      const lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
-      let output = "<ul>";
-      lichSu.forEach((item, index) => {
-        output += `
-          <li>
-            <div class="history-title">
-              <span id="title_${index}">${item.title}</span>
-              <input id="input_${index}" value="${item.title}" type="text">
-              <button class="edit" onclick="toggleEditTitle(${index})"><i class="fas fa-pencil-alt"></i></button>
-              <button class="delete" onclick="xoaMotMuc(${index})">Xóa</button>
-              <button class="copy" onclick="saoChepTuLichSu(${index})">Sao chép</button>
+    <div class="container">
+        <!-- Header với dark mode toggle -->
+        <div class="card">
+            <div class="header">
+                <h2><i class="fas fa-pencil-alt" style="margin-right: 10px; color: var(--accent);"></i>Bộ đếm từ Pro</h2>
+                <div class="theme-toggle" id="themeToggle">
+                    <span class="active"><i class="fas fa-sun"></i></span>
+                    <span><i class="fas fa-moon"></i></span>
+                </div>
             </div>
-            Thời gian: ${item.timestamp}<br>
-            Văn bản: ${item.text.replace(/\n/g, "<br>")}<br>
-            Số từ: ${item.soTu} từ<br>
-            Số ký tự: ${item.soKyTu}
-          </li>`;
-      });
-      output += "</ul>";
-      document.getElementById("lich_su").innerHTML = output;
-    }
 
-    // Hàm sao chép văn bản từ lịch sử
-    function saoChepTuLichSu(index) {
-      const lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
-      const text = lichSu[index].text;
-      if (!text) {
-        showError("Không có văn bản để sao chép.");
-        return;
-      }
-      navigator.clipboard.writeText(text).then(() => {
-        const li = document.getElementsByTagName("li")[index];
-        li.innerHTML += `<br><span style="color: green;">Đã sao chép!</span>`;
-        setTimeout(() => {
-          hienThiLichSu(); // Làm mới để xóa thông báo
-        }, 2000);
-      });
-    }
+            <!-- Vùng nhập liệu -->
+            <textarea id="textInput" placeholder="Nhập hoặc dán văn bản của bạn..."></textarea>
 
-    // Hàm chỉnh sửa tiêu đề
-    function toggleEditTitle(index) {
-      const titleSpan = document.getElementById(`title_${index}`);
-      const titleInput = document.getElementById(`input_${index}`);
-      if (titleInput.style.display === "none" || !titleInput.style.display) {
-        titleSpan.style.display = "none";
-        titleInput.style.display = "inline-block";
-        titleInput.focus();
-        titleInput.onblur = () => saveTitle(index);
-        titleInput.onkeypress = (e) => {
-          if (e.key === "Enter") saveTitle(index);
-        };
-      }
-    }
+            <!-- Thanh công cụ -->
+            <div class="toolbar">
+                <button class="btn btn-primary" id="copyBtn"><i class="fas fa-copy"></i> Sao chép</button>
+                <button class="btn" id="clearBtn"><i class="fas fa-trash-alt"></i> Xóa</button>
+                <button class="btn" id="uppercaseBtn"><i class="fas fa-arrow-up"></i> IN HOA</button>
+                <button class="btn" id="lowercaseBtn"><i class="fas fa-arrow-down"></i> in thường</button>
+                <button class="btn" id="trimBtn"><i class="fas fa-cut"></i> Xóa khoảng trắng thừa</button>
+                <button class="btn btn-success" id="saveHistoryBtn"><i class="fas fa-save"></i> Lưu vào lịch sử</button>
+            </div>
 
-    // Hàm lưu tiêu đề sau khi chỉnh sửa
-    function saveTitle(index) {
-      const titleInput = document.getElementById(`input_${index}`);
-      const titleSpan = document.getElementById(`title_${index}`);
-      let lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
-      const newTitle = titleInput.value.trim() || "Văn bản"; // Mặc định nếu rỗng
-      lichSu[index].title = newTitle;
-      localStorage.setItem("lichSuVanBan", JSON.stringify(lichSu));
-      titleSpan.textContent = newTitle;
-      titleSpan.style.display = "inline";
-      titleInput.style.display = "none";
-    }
+            <!-- Thống kê mở rộng -->
+            <div class="stats-grid" id="stats">
+                <div class="stat-item">
+                    <div class="stat-value" id="wordCount">0</div>
+                    <div class="stat-label">Từ</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="charCount">0</div>
+                    <div class="stat-label">Ký tự</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="charNoSpace">0</div>
+                    <div class="stat-label">Ký tự (ko dấu cách)</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="sentenceCount">0</div>
+                    <div class="stat-label">Câu</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="lineCount">0</div>
+                    <div class="stat-label">Dòng</div>
+                </div>
+                <div class="stat-item">
+                    <div class="stat-value" id="readingTime">0</div>
+                    <div class="stat-label">Phút đọc</div>
+                </div>
+            </div>
+        </div>
 
-    // Hàm xóa một mục lịch sử
-    function xoaMotMuc(index) {
-      let lichSu = JSON.parse(localStorage.getItem("lichSuVanBan") || "[]");
-      lichSu.splice(index, 1);
-      localStorage.setItem("lichSuVanBan", JSON.stringify(lichSu));
-      hienThiLichSu();
-    }
+        <!-- Lịch sử văn bản -->
+        <div class="card">
+            <div class="history-header">
+                <h3><i class="fas fa-history" style="margin-right: 10px;"></i> Lịch sử</h3>
+                <div class="search-box">
+                    <i class="fas fa-search"></i>
+                    <input type="text" id="searchHistory" placeholder="Tìm kiếm...">
+                </div>
+                <div style="display: flex; gap: 10px;">
+                    <button class="btn" id="exportHistoryBtn"><i class="fas fa-download"></i> Xuất JSON</button>
+                    <button class="btn btn-danger" id="clearAllHistoryBtn"><i class="fas fa-trash"></i> Xóa tất cả</button>
+                </div>
+            </div>
+            <div id="historyList" class="history-list">
+                <!-- Lịch sử sẽ được render ở đây -->
+            </div>
+        </div>
+        <div class="version">v1.0.0 - Nâng cấp toàn diện</div>
+    </div>
 
-    // Hàm xóa toàn bộ lịch sử
-    function xoaLichSu() {
-      localStorage.removeItem("lichSuVanBan");
-      hienThiLichSu();
-    }
+    <!-- Toast thông báo -->
+    <div id="toast" class="toast"></div>
 
-    // Sự kiện input cho đếm thời gian thực
-    textarea.addEventListener("input", demSoTuVaKyTu);
+    <script>
+        (function() {
+            // ---------- DOM elements ----------
+            const textarea = document.getElementById('textInput');
+            const wordCountEl = document.getElementById('wordCount');
+            const charCountEl = document.getElementById('charCount');
+            const charNoSpaceEl = document.getElementById('charNoSpace');
+            const sentenceCountEl = document.getElementById('sentenceCount');
+            const lineCountEl = document.getElementById('lineCount');
+            const readingTimeEl = document.getElementById('readingTime');
 
-    // Hiển thị lịch sử khi tải trang
-    hienThiLichSu();
+            const copyBtn = document.getElementById('copyBtn');
+            const clearBtn = document.getElementById('clearBtn');
+            const uppercaseBtn = document.getElementById('uppercaseBtn');
+            const lowercaseBtn = document.getElementById('lowercaseBtn');
+            const trimBtn = document.getElementById('trimBtn');
+            const saveHistoryBtn = document.getElementById('saveHistoryBtn');
+            const themeToggle = document.getElementById('themeToggle');
+            const searchInput = document.getElementById('searchHistory');
+            const exportBtn = document.getElementById('exportHistoryBtn');
+            const clearAllBtn = document.getElementById('clearAllHistoryBtn');
+            const historyListDiv = document.getElementById('historyList');
+            const toastDiv = document.getElementById('toast');
 
-    // Gọi lần đầu nếu có nội dung mặc định
-    demSoTuVaKyTu();
-  </script>
+            // ---------- State ----------
+            let historyData = JSON.parse(localStorage.getItem('pro_word_history')) || [];
+            let currentText = localStorage.getItem('pro_current_text') || '';
+            let darkMode = localStorage.getItem('pro_dark_mode') === 'true';
+            let searchTerm = '';
+
+            // ---------- Khởi tạo ----------
+            textarea.value = currentText;
+            if (darkMode) document.body.classList.add('dark');
+            updateThemeToggle();
+
+            // ---------- Hàm đếm từ, câu, ... ----------
+            function updateStats() {
+                const text = textarea.value;
+                // Đếm từ (tách bằng khoảng trắng, loại bỏ khoảng trắng đầu cuối)
+                const words = text.trim() ? text.trim().split(/\s+/).filter(w => w.length > 0) : [];
+                const wordCount = words.length;
+
+                // Đếm ký tự (bao gồm dấu cách)
+                const charCount = text.length;
+                // Ký tự không dấu cách
+                const charNoSpace = text.replace(/\s/g, '').length;
+
+                // Đếm câu (dựa trên . ! ? nhưng cần tránh trường hợp viết tắt, tạm dùng regex đơn giản)
+                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
+                const sentenceCount = sentences.length;
+
+                // Đếm dòng
+                const lines = text.split(/\r\n|\r|\n/);
+                const lineCount = lines.length;
+
+                // Thời gian đọc (trung bình 200 từ/phút)
+                const readingTime = (wordCount / 200).toFixed(1);
+
+                // Cập nhật DOM
+                wordCountEl.textContent = wordCount;
+                charCountEl.textContent = charCount;
+                charNoSpaceEl.textContent = charNoSpace;
+                sentenceCountEl.textContent = sentenceCount;
+                lineCountEl.textContent = lineCount;
+                readingTimeEl.textContent = readingTime;
+            }
+
+            // ---------- Lưu văn bản hiện tại vào localStorage (tự động) ----------
+            function saveCurrentText() {
+                localStorage.setItem('pro_current_text', textarea.value);
+            }
+
+            // ---------- Toast ----------
+            function showToast(message, type = 'success') {
+                toastDiv.textContent = message;
+                toastDiv.style.borderLeftColor = type === 'success' ? '#10b981' : '#ef4444';
+                toastDiv.classList.add('show');
+                setTimeout(() => toastDiv.classList.remove('show'), 2500);
+            }
+
+            // ---------- Render lịch sử ----------
+            function renderHistory() {
+                const filtered = historyData.filter(item => 
+                    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
+                    item.text.toLowerCase().includes(searchTerm.toLowerCase())
+                );
+
+                if (filtered.length === 0) {
+                    historyListDiv.innerHTML = '<p style="text-align:center; color: var(--text-secondary);">Chưa có lịch sử nào.</p>';
+                    return;
+                }
+
+                let html = '';
+                filtered.forEach((item, index) => {
+                    // Tìm index gốc để thao tác xóa/sửa
+                    const originalIndex = historyData.findIndex(h => h.timestamp === item.timestamp && h.text === item.text);
+                    html += `
+                        <div class="history-item" data-index="${originalIndex}">
+                            <div class="history-title">
+                                <span class="title-text" id="title-${originalIndex}">${escapeHtml(item.title)}</span>
+                                <input type="text" id="edit-input-${originalIndex}" value="${escapeHtml(item.title)}" style="display:none; flex:1; padding:5px; border-radius:20px; border:1px solid var(--border); background:var(--card-bg); color:var(--text-primary);">
+                                <div class="history-actions">
+                                    <button class="btn edit-title-btn" data-index="${originalIndex}"><i class="fas fa-pencil-alt"></i></button>
+                                    <button class="btn copy-history-btn" data-index="${originalIndex}"><i class="fas fa-copy"></i></button>
+                                    <button class="btn btn-danger delete-history-btn" data-index="${originalIndex}"><i class="fas fa-trash"></i></button>
+                                </div>
+                            </div>
+                            <div class="history-preview">${escapeHtml(item.text.substring(0, 150))}${item.text.length > 150 ? '...' : ''}</div>
+                            <div class="history-meta">
+                                <span><i class="far fa-clock"></i> ${item.timestamp}</span>
+                                <span><i class="fas fa-language"></i> ${item.wordCount || '0'} từ</span>
+                                <span><i class="fas fa-text-height"></i> ${item.charCount || '0'} ký tự</span>
+                            </div>
+                        </div>
+                    `;
+                });
+                historyListDiv.innerHTML = html;
+
+                // Gắn sự kiện cho các nút trong lịch sử
+                document.querySelectorAll('.edit-title-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const idx = btn.getAttribute('data-index');
+                        toggleEditTitle(idx);
+                    });
+                });
+
+                document.querySelectorAll('.copy-history-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const idx = btn.getAttribute('data-index');
+                        copyFromHistory(idx);
+                    });
+                });
+
+                document.querySelectorAll('.delete-history-btn').forEach(btn => {
+                    btn.addEventListener('click', (e) => {
+                        e.stopPropagation();
+                        const idx = btn.getAttribute('data-index');
+                        deleteHistoryItem(idx);
+                    });
+                });
+            }
+
+            // Hàm escape HTML để tránh XSS
+            function escapeHtml(unsafe) {
+                return unsafe.replace(/[&<>"]/g, function(m) {
+                    if (m === '&') return '&amp;';
+                    if (m === '<') return '&lt;';
+                    if (m === '>') return '&gt;';
+                    if (m === '"') return '&quot;';
+                    return m;
+                });
+            }
+
+            // Chỉnh sửa tiêu đề lịch sử
+            function toggleEditTitle(index) {
+                const titleSpan = document.getElementById(`title-${index}`);
+                const input = document.getElementById(`edit-input-${index}`);
+                if (input.style.display === 'none' || input.style.display === '') {
+                    titleSpan.style.display = 'none';
+                    input.style.display = 'flex';
+                    input.focus();
+                    const saveEdit = () => {
+                        const newTitle = input.value.trim() || 'Văn bản';
+                        historyData[index].title = newTitle;
+                        localStorage.setItem('pro_word_history', JSON.stringify(historyData));
+                        titleSpan.textContent = newTitle;
+                        titleSpan.style.display = 'inline';
+                        input.style.display = 'none';
+                        showToast('Đã cập nhật tên');
+                    };
+                    input.onblur = saveEdit;
+                    input.onkeypress = (e) => {
+                        if (e.key === 'Enter') {
+                            saveEdit();
+                        }
+                    };
+                }
+            }
+
+            // Sao chép từ lịch sử
+            function copyFromHistory(index) {
+                const text = historyData[index].text;
+                navigator.clipboard.writeText(text).then(() => {
+                    showToast('Đã sao chép văn bản');
+                }).catch(() => showToast('Không thể sao chép', 'error'));
+            }
+
+            // Xóa một mục lịch sử
+            function deleteHistoryItem(index) {
+                historyData.splice(index, 1);
+                localStorage.setItem('pro_word_history', JSON.stringify(historyData));
+                renderHistory();
+                showToast('Đã xóa mục');
+            }
+
+            // Xóa tất cả lịch sử
+            clearAllBtn.addEventListener('click', () => {
+                if (confirm('Xóa toàn bộ lịch sử?')) {
+                    historyData = [];
+                    localStorage.removeItem('pro_word_history');
+                    renderHistory();
+                    showToast('Đã xóa toàn bộ lịch sử');
+                }
+            });
+
+            // Xuất lịch sử ra JSON
+            exportBtn.addEventListener('click', () => {
+                const dataStr = JSON.stringify(historyData, null, 2);
+                const blob = new Blob([dataStr], { type: 'application/json' });
+                const url = URL.createObjectURL(blob);
+                const a = document.createElement('a');
+                a.href = url;
+                a.download = `word_history_${new Date().toISOString().slice(0,10)}.json`;
+                a.click();
+                URL.revokeObjectURL(url);
+                showToast('Đã xuất file JSON');
+            });
+
+            // Tìm kiếm lịch sử
+            searchInput.addEventListener('input', (e) => {
+                searchTerm = e.target.value;
+                renderHistory();
+            });
+
+            // ---------- Lưu lịch sử mới ----------
+            saveHistoryBtn.addEventListener('click', () => {
+                const text = textarea.value.trim();
+                if (!text) {
+                    showToast('Vui lòng nhập văn bản', 'error');
+                    return;
+                }
+
+                // Tạo tên mặc định
+                const defaultTitle = `Văn bản ${new Date().toLocaleString('vi-VN')}`;
+                // Dùng prompt để nhập tên (hoặc có thể dùng modal, nhưng tạm prompt)
+                const title = prompt('Nhập tên cho văn bản này:', defaultTitle) || defaultTitle;
+
+                // Lấy thống kê hiện tại
+                const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
+                const chars = text.length;
+
+                const newItem = {
+                    title: title,
+                    text: text,
+                    wordCount: words,
+                    charCount: chars,
+                    timestamp: new Date().toLocaleString('vi-VN')
+                };
+                historyData.unshift(newItem); // Thêm vào đầu
+                localStorage.setItem('pro_word_history', JSON.stringify(historyData));
+                renderHistory();
+                showToast('Đã lưu vào lịch sử');
+            });
+
+            // ---------- Xử lý nút công cụ ----------
+            copyBtn.addEventListener('click', () => {
+                const text = textarea.value;
+                if (!text.trim()) {
+                    showToast('Không có nội dung', 'error');
+                    return;
+                }
+                navigator.clipboard.writeText(text).then(() => showToast('Đã sao chép'));
+            });
+
+            clearBtn.addEventListener('click', () => {
+                if (textarea.value.trim() && confirm('Xóa văn bản hiện tại?')) {
+                    textarea.value = '';
+                    updateStats();
+                    saveCurrentText();
+                    showToast('Đã xóa');
+                }
+            });
+
+            uppercaseBtn.addEventListener('click', () => {
+                textarea.value = textarea.value.toLocaleUpperCase('vi');
+                updateStats();
+                saveCurrentText();
+            });
+
+            lowercaseBtn.addEventListener('click', () => {
+                textarea.value = textarea.value.toLocaleLowerCase('vi');
+                updateStats();
+                saveCurrentText();
+            });
+
+            trimBtn.addEventListener('click', () => {
+                // Xóa khoảng trắng đầu cuối và chuẩn hóa khoảng trắng giữa các từ
+                let text = textarea.value;
+                text = text.replace(/^\s+|\s+$/g, ''); // trim
+                text = text.replace(/\s+/g, ' '); // nhiều space -> 1 space
+                textarea.value = text;
+                updateStats();
+                saveCurrentText();
+                showToast('Đã chuẩn hóa khoảng trắng');
+            });
+
+            // ---------- Dark mode ----------
+            function updateThemeToggle() {
+                const spans = themeToggle.children;
+                if (darkMode) {
+                    spans[0].classList.remove('active');
+                    spans[1].classList.add('active');
+                } else {
+                    spans[0].classList.add('active');
+                    spans[1].classList.remove('active');
+                }
+            }
+
+            themeToggle.addEventListener('click', () => {
+                darkMode = !darkMode;
+                document.body.classList.toggle('dark', darkMode);
+                localStorage.setItem('pro_dark_mode', darkMode);
+                updateThemeToggle();
+            });
+
+            // ---------- Sự kiện nhập liệu ----------
+            textarea.addEventListener('input', () => {
+                updateStats();
+                saveCurrentText();
+            });
+
+            // ---------- Khởi tạo lần đầu ----------
+            updateStats();
+            renderHistory();
+
+            // Auto-save khi rời trang (cũng đã lưu qua input)
+            window.addEventListener('beforeunload', () => {
+                saveCurrentText();
+            });
+
+        })();
+    </script>
 </body>
 </html>
