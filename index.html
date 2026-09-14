@@ -1,769 +1,1077 @@
 <!DOCTYPE html>
 <html lang="vi">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <meta name="description" content="Công cụ đếm từ và ký tự tiếng Việt miễn phí, nhiều tính năng thông minh">
-    <meta name="keywords" content="đếm từ, đếm ký tự, công cụ văn bản, tiếng Việt, xử lý văn bản">
-    <title>Bộ đếm từ Pro</title>
-    <!-- Google Fonts & Font Awesome -->
-    <link rel="preconnect" href="https://fonts.googleapis.com">
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-    <style>
-        * {
-            margin: 0;
-            padding: 0;
-            box-sizing: border-box;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<meta name="description" content="Bộ đếm từ và ký tự tiếng Việt miễn phí - công cụ văn bản thông minh, hiện đại">
+<meta name="keywords" content="đếm từ, đếm ký tự, công cụ văn bản, tiếng Việt, xử lý văn bản">
+<title>Bộ đếm từ Pro — Công cụ văn bản thông minh</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
+<style>
+/* ============ RESET & TOKENS ============ */
+*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#f4f6fb;
+  --bg-2:#eef1f9;
+  --surface:rgba(255,255,255,.72);
+  --surface-solid:#ffffff;
+  --surface-2:#f8fafc;
+  --text:#0f172a;
+  --text-muted:#64748b;
+  --border:rgba(15,23,42,.08);
+  --border-strong:rgba(15,23,42,.14);
+  --accent:#6366f1;
+  --accent-2:#8b5cf6;
+  --accent-soft:rgba(99,102,241,.12);
+  --accent-grad:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#ec4899 100%);
+  --success:#10b981;
+  --warning:#f59e0b;
+  --danger:#ef4444;
+  --shadow-sm:0 1px 2px rgba(15,23,42,.04);
+  --shadow:0 4px 24px -8px rgba(15,23,42,.12);
+  --shadow-lg:0 24px 60px -20px rgba(15,23,42,.25);
+  --radius:14px;
+  --radius-lg:22px;
+  --radius-pill:999px;
+  --tr:all .25s cubic-bezier(.4,0,.2,1);
+}
+body.dark{
+  --bg:#0b1020;
+  --bg-2:#0f1629;
+  --surface:rgba(24,31,52,.72);
+  --surface-solid:#151c33;
+  --surface-2:#1a2140;
+  --text:#e8ecf6;
+  --text-muted:#94a3b8;
+  --border:rgba(148,163,184,.14);
+  --border-strong:rgba(148,163,184,.24);
+  --accent-soft:rgba(99,102,241,.2);
+  --shadow:0 4px 24px -8px rgba(0,0,0,.5);
+  --shadow-lg:0 24px 60px -20px rgba(0,0,0,.7);
+}
 
-        :root {
-            --bg-gradient: linear-gradient(145deg, #f3f4f6, #ffffff);
-            --card-bg: #ffffff;
-            --text-primary: #1f2937;
-            --text-secondary: #4b5563;
-            --border: #e5e7eb;
-            --accent: #3b82f6;
-            --accent-hover: #2563eb;
-            --danger: #ef4444;
-            --danger-hover: #dc2626;
-            --success: #10b981;
-            --success-hover: #059669;
-            --history-bg: #f9fafb;
-            --shadow: 0 10px 25px -5px rgba(0,0,0,0.1);
-        }
+body{
+  font-family:'Inter',system-ui,sans-serif;
+  background:var(--bg);
+  color:var(--text);
+  min-height:100vh;
+  line-height:1.55;
+  transition:background .35s,color .35s;
+  overflow-x:hidden;
+  -webkit-font-smoothing:antialiased;
+}
+/* animated mesh background */
+body::before{
+  content:'';position:fixed;inset:-20%;z-index:-1;
+  background:
+    radial-gradient(circle at 20% 20%,rgba(99,102,241,.18),transparent 40%),
+    radial-gradient(circle at 80% 10%,rgba(236,72,153,.14),transparent 40%),
+    radial-gradient(circle at 60% 90%,rgba(139,92,246,.16),transparent 45%);
+  animation:mesh 22s ease-in-out infinite alternate;
+  filter:blur(20px);
+}
+body.dark::before{opacity:.55}
+@keyframes mesh{
+  0%{transform:translate(0,0) scale(1)}
+  50%{transform:translate(2%,-2%) scale(1.05)}
+  100%{transform:translate(-2%,2%) scale(1)}
+}
 
-        body.dark {
-            --bg-gradient: linear-gradient(145deg, #1f2937, #111827);
-            --card-bg: #1f2937;
-            --text-primary: #f9fafb;
-            --text-secondary: #d1d5db;
-            --border: #374151;
-            --history-bg: #111827;
-            --shadow: 0 10px 25px -5px rgba(0,0,0,0.5);
-        }
+/* ============ LAYOUT ============ */
+.container{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
+header.app-header{
+  display:flex;justify-content:space-between;align-items:center;
+  gap:16px;flex-wrap:wrap;margin-bottom:24px;
+}
+.brand{display:flex;align-items:center;gap:14px}
+.brand-logo{
+  width:48px;height:48px;border-radius:14px;
+  background:var(--accent-grad);color:#fff;
+  display:grid;place-items:center;font-size:22px;
+  box-shadow:0 8px 24px -6px rgba(99,102,241,.5);
+  position:relative;overflow:hidden;
+}
+.brand-logo::after{
+  content:'';position:absolute;inset:0;
+  background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%);
+  animation:shine 4s linear infinite;
+}
+@keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
+.brand h1{font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
+.brand p{font-size:.78rem;color:var(--text-muted);font-weight:500}
 
-        body {
-            font-family: 'Poppins', sans-serif;
-            background: var(--bg-gradient);
-            color: var(--text-primary);
-            min-height: 100vh;
-            display: flex;
-            flex-direction: column;
-            transition: background 0.3s, color 0.3s;
-            padding: 20px;
-        }
+.header-actions{display:flex;gap:10px;align-items:center}
 
-        .container {
-            max-width: 1000px;
-            margin: 0 auto;
-            width: 100%;
-        }
+/* icon button */
+.icon-btn{
+  width:42px;height:42px;border-radius:12px;
+  background:var(--surface-solid);border:1px solid var(--border);
+  color:var(--text);cursor:pointer;
+  display:grid;place-items:center;font-size:16px;
+  transition:var(--tr);position:relative;
+  backdrop-filter:blur(12px);
+}
+.icon-btn:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--accent);box-shadow:var(--shadow)}
+.icon-btn .badge{
+  position:absolute;top:-4px;right:-4px;
+  background:var(--accent);color:#fff;font-size:10px;font-weight:700;
+  border-radius:999px;padding:2px 6px;min-width:18px;text-align:center;
+}
 
-        .card {
-            background: var(--card-bg);
-            border-radius: 24px;
-            padding: 25px;
-            box-shadow: var(--shadow);
-            margin-bottom: 25px;
-            transition: background 0.3s, box-shadow 0.3s;
-            border: 1px solid var(--border);
-        }
+/* theme toggle */
+.theme-toggle{
+  width:64px;height:34px;border-radius:999px;
+  background:var(--surface-solid);border:1px solid var(--border);
+  cursor:pointer;position:relative;transition:var(--tr);
+  backdrop-filter:blur(12px);
+}
+.theme-toggle .thumb{
+  position:absolute;top:3px;left:3px;width:26px;height:26px;
+  border-radius:50%;background:var(--accent-grad);
+  display:grid;place-items:center;color:#fff;font-size:12px;
+  transition:transform .35s cubic-bezier(.34,1.56,.64,1);
+  box-shadow:0 4px 10px -2px rgba(99,102,241,.5);
+}
+body.dark .theme-toggle .thumb{transform:translateX(30px)}
+.theme-toggle:hover{border-color:var(--accent)}
 
-        .header {
-            display: flex;
-            justify-content: space-between;
-            align-items: center;
-            margin-bottom: 20px;
-            flex-wrap: wrap;
-            gap: 15px;
-        }
+/* ============ CARD ============ */
+.card{
+  background:var(--surface);
+  border:1px solid var(--border);
+  border-radius:var(--radius-lg);
+  padding:24px;
+  box-shadow:var(--shadow);
+  backdrop-filter:blur(20px);
+  -webkit-backdrop-filter:blur(20px);
+  margin-bottom:22px;
+  transition:var(--tr);
+}
+.card-title{
+  display:flex;align-items:center;gap:10px;
+  font-size:1.05rem;font-weight:700;margin-bottom:16px;
+}
+.card-title i{color:var(--accent)}
 
-        h2 {
-            font-weight: 600;
-            font-size: 1.8rem;
-            background: linear-gradient(135deg, #3b82f6, #8b5cf6);
-            -webkit-background-clip: text;
-            -webkit-text-fill-color: transparent;
-        }
+/* ============ EDITOR ============ */
+.editor-wrap{position:relative}
+textarea.editor{
+  width:100%;min-height:260px;padding:18px 20px;
+  font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;
+  background:var(--surface-2);color:var(--text);
+  border:1.5px solid var(--border);border-radius:var(--radius);
+  resize:vertical;outline:none;transition:var(--tr);
+}
+textarea.editor:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 4px var(--accent-soft);
+  background:var(--surface-solid);
+}
+textarea.editor::placeholder{color:var(--text-muted);opacity:.7}
 
-        .theme-toggle {
-            background: var(--border);
-            border: none;
-            border-radius: 40px;
-            width: 50px;
-            height: 26px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            padding: 3px;
-            cursor: pointer;
-            position: relative;
-        }
+.save-indicator{
+  position:absolute;top:14px;right:16px;
+  font-size:11px;color:var(--text-muted);
+  background:var(--surface-solid);padding:4px 10px;border-radius:999px;
+  border:1px solid var(--border);
+  display:flex;align-items:center;gap:6px;
+  opacity:0;transition:opacity .3s;pointer-events:none;
+}
+.save-indicator.show{opacity:1}
+.save-indicator i{color:var(--success)}
 
-        .theme-toggle span {
-            font-size: 14px;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            border-radius: 50%;
-            transition: 0.2s;
-        }
+/* ============ TOOLBAR ============ */
+.toolbar{
+  display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;
+  align-items:center;
+}
+.btn{
+  display:inline-flex;align-items:center;gap:8px;
+  padding:9px 16px;border-radius:10px;
+  font-family:inherit;font-size:13.5px;font-weight:600;
+  background:var(--surface-solid);color:var(--text);
+  border:1px solid var(--border);cursor:pointer;
+  transition:var(--tr);white-space:nowrap;position:relative;overflow:hidden;
+}
+.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--border-strong)}
+.btn:active{transform:translateY(0)}
+.btn i{font-size:13px}
+.btn-primary{background:var(--accent-grad);color:#fff;border:none;box-shadow:0 6px 18px -6px rgba(99,102,241,.55)}
+.btn-primary:hover{box-shadow:0 10px 24px -6px rgba(99,102,241,.7)}
+.btn-success{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none}
+.btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none}
+.btn-ghost{background:transparent}
 
-        .theme-toggle .active {
-            background: var(--accent);
-            color: white;
-        }
+/* dropdown */
+.dropdown{position:relative}
+.dropdown-menu{
+  position:absolute;top:calc(100% + 8px);left:0;z-index:50;
+  background:var(--surface-solid);border:1px solid var(--border);
+  border-radius:14px;padding:8px;min-width:230px;
+  box-shadow:var(--shadow-lg);
+  opacity:0;visibility:hidden;transform:translateY(-8px);
+  transition:var(--tr);
+}
+.dropdown.open .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0)}
+.dropdown-menu button{
+  width:100%;text-align:left;padding:9px 12px;
+  background:transparent;border:none;border-radius:8px;
+  color:var(--text);font-family:inherit;font-size:13.5px;font-weight:500;
+  cursor:pointer;display:flex;align-items:center;gap:10px;
+  transition:background .15s;
+}
+.dropdown-menu button:hover{background:var(--accent-soft);color:var(--accent)}
+.dropdown-menu hr{border:none;border-top:1px solid var(--border);margin:6px 4px}
+.dropdown-menu button i{width:16px;text-align:center;color:var(--text-muted);font-size:13px}
+.dropdown-menu button:hover i{color:var(--accent)}
 
-        textarea {
-            width: 100%;
-            min-height: 250px;
-            padding: 16px;
-            font-size: 16px;
-            border: 2px solid var(--border);
-            border-radius: 16px;
-            background: var(--card-bg);
-            color: var(--text-primary);
-            resize: vertical;
-            font-family: 'Poppins', sans-serif;
-            transition: border 0.2s;
-            outline: none;
-        }
+/* ============ STATS ============ */
+.stats-grid{
+  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+  gap:12px;margin-top:20px;
+}
+.stat{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:14px;padding:14px 12px;text-align:center;
+  transition:var(--tr);position:relative;overflow:hidden;
+}
+.stat::before{
+  content:'';position:absolute;top:0;left:0;right:0;height:3px;
+  background:var(--accent-grad);opacity:0;transition:opacity .3s;
+}
+.stat:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:var(--shadow)}
+.stat:hover::before{opacity:1}
+.stat-value{
+  font-size:1.7rem;font-weight:800;
+  background:var(--accent-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
+  background-clip:text;line-height:1.1;font-variant-numeric:tabular-nums;
+}
+.stat-label{
+  font-size:.7rem;font-weight:600;color:var(--text-muted);
+  text-transform:uppercase;letter-spacing:.06em;margin-top:4px;
+}
+.stat.clickable{cursor:pointer}
 
-        textarea:focus {
-            border-color: var(--accent);
-        }
+/* progress bar */
+.limit-bar{height:6px;background:var(--border);border-radius:999px;margin-top:16px;overflow:hidden;position:relative}
+.limit-bar-fill{height:100%;background:var(--accent-grad);width:0;border-radius:999px;transition:width .3s,background .3s}
+.limit-bar-fill.warning{background:linear-gradient(90deg,#f59e0b,#f97316)}
+.limit-bar-fill.danger{background:linear-gradient(90deg,#ef4444,#dc2626)}
+.limit-info{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-muted);margin-top:6px;font-weight:500}
 
-        .toolbar {
-            display: flex;
-            flex-wrap: wrap;
-            gap: 12px;
-            margin: 15px 0 10px;
-            justify-content: center;
-        }
+/* ============ HISTORY ============ */
+.history-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
+.search-box{
+  flex:1;min-width:200px;display:flex;align-items:center;gap:10px;
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:12px;padding:10px 14px;transition:var(--tr);
+}
+.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.search-box i{color:var(--text-muted);font-size:14px}
+.search-box input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:inherit;font-size:14px}
 
-        .btn {
-            padding: 10px 20px;
-            border: none;
-            border-radius: 40px;
-            font-weight: 500;
-            font-size: 14px;
-            display: inline-flex;
-            align-items: center;
-            gap: 8px;
-            cursor: pointer;
-            background: var(--border);
-            color: var(--text-primary);
-            transition: all 0.2s;
-            border: 1px solid transparent;
-        }
+.history-list{display:flex;flex-direction:column;gap:12px;max-height:520px;overflow-y:auto;padding-right:4px}
+.history-list::-webkit-scrollbar{width:8px}
+.history-list::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
 
-        .btn-primary {
-            background: var(--accent);
-            color: white;
-        }
-        .btn-primary:hover {
-            background: var(--accent-hover);
-            transform: translateY(-2px);
-        }
+.history-item{
+  background:var(--surface-2);border:1px solid var(--border);
+  border-radius:14px;padding:14px 16px;transition:var(--tr);
+  animation:fadeIn .35s ease;
+}
+@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.history-item:hover{border-color:var(--border-strong);box-shadow:var(--shadow)}
+.history-item.pinned{border-left:3px solid var(--warning)}
 
-        .btn-danger {
-            background: var(--danger);
-            color: white;
-        }
-        .btn-danger:hover {
-            background: var(--danger-hover);
-        }
+.h-row1{display:flex;align-items:center;gap:10px;margin-bottom:6px}
+.h-title{font-weight:600;font-size:14.5px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:8px}
+.h-title input{
+  flex:1;background:var(--surface-solid);border:1px solid var(--accent);
+  border-radius:8px;padding:5px 10px;font-family:inherit;font-size:14px;color:var(--text);outline:none;
+}
+.h-actions{display:flex;gap:4px}
+.h-actions button{
+  width:30px;height:30px;border-radius:8px;border:none;
+  background:transparent;color:var(--text-muted);cursor:pointer;
+  display:grid;place-items:center;font-size:12.5px;transition:var(--tr);
+}
+.h-actions button:hover{background:var(--accent-soft);color:var(--accent);transform:scale(1.08)}
+.h-actions button.fav.active{color:var(--warning)}
+.h-actions button.del:hover{background:rgba(239,68,68,.12);color:var(--danger)}
 
-        .btn-success {
-            background: var(--success);
-            color: white;
-        }
-        .btn-success:hover {
-            background: var(--success-hover);
-        }
+.h-preview{
+  color:var(--text-muted);font-size:13px;line-height:1.5;
+  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
+  margin:6px 0 8px;
+}
+.h-meta{display:flex;flex-wrap:wrap;gap:14px;font-size:11.5px;color:var(--text-muted);font-weight:500}
+.h-meta span{display:inline-flex;align-items:center;gap:5px}
+.h-meta i{color:var(--accent);font-size:10.5px}
 
-        .btn:hover {
-            box-shadow: 0 5px 10px rgba(0,0,0,0.1);
-        }
+.empty{
+  text-align:center;padding:40px 20px;color:var(--text-muted);
+}
+.empty i{font-size:44px;opacity:.25;margin-bottom:12px;display:block}
+.empty p{font-size:14px;font-weight:500}
 
-        .stats-grid {
-            display: grid;
-            grid-template-columns: repeat(auto-fit, minmax(140px, 1fr));
-            gap: 15px;
-            margin: 20px 0;
-        }
+/* ============ MODAL ============ */
+.modal-backdrop{
+  position:fixed;inset:0;background:rgba(15,23,42,.55);
+  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
+  z-index:200;display:grid;place-items:center;padding:20px;
+  opacity:0;visibility:hidden;transition:var(--tr);
+}
+.modal-backdrop.open{opacity:1;visibility:visible}
+.modal{
+  background:var(--surface-solid);border:1px solid var(--border);
+  border-radius:20px;padding:24px;width:100%;max-width:520px;
+  box-shadow:var(--shadow-lg);transform:scale(.95);transition:var(--tr);
+  max-height:85vh;overflow-y:auto;
+}
+.modal-backdrop.open .modal{transform:scale(1)}
+.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
+.modal-head h3{font-size:1.1rem;font-weight:700}
+.modal-head button{
+  width:32px;height:32px;border-radius:9px;border:none;
+  background:var(--surface-2);color:var(--text-muted);cursor:pointer;transition:var(--tr);
+}
+.modal-head button:hover{background:var(--danger);color:#fff}
+.modal input[type=text]{
+  width:100%;padding:12px 14px;border-radius:12px;
+  border:1.5px solid var(--border);background:var(--surface-2);
+  color:var(--text);font-family:inherit;font-size:15px;outline:none;transition:var(--tr);
+}
+.modal input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
+.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
 
-        .stat-item {
-            background: var(--history-bg);
-            border-radius: 16px;
-            padding: 15px 10px;
-            text-align: center;
-            border: 1px solid var(--border);
-        }
+/* frequency list */
+.freq-list{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto}
+.freq-item{display:flex;align-items:center;gap:12px;padding:9px 12px;background:var(--surface-2);border-radius:10px}
+.freq-word{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px;min-width:80px}
+.freq-bar{flex:1;height:8px;background:var(--border);border-radius:999px;overflow:hidden}
+.freq-bar div{height:100%;background:var(--accent-grad);border-radius:999px;transition:width .5s}
+.freq-count{font-size:13px;font-weight:700;color:var(--accent);min-width:36px;text-align:right}
 
-        .stat-value {
-            font-size: 2rem;
-            font-weight: 700;
-            color: var(--accent);
-            line-height: 1.2;
-        }
+/* shortcuts table */
+.kbd-table{width:100%;border-collapse:collapse;font-size:14px}
+.kbd-table td{padding:9px 4px;border-bottom:1px solid var(--border)}
+.kbd-table td:last-child{text-align:right;color:var(--text-muted);font-size:12.5px}
+kbd{
+  display:inline-block;padding:3px 8px;border-radius:6px;
+  background:var(--surface-2);border:1px solid var(--border-strong);
+  font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;
+  box-shadow:0 2px 0 var(--border-strong);
+}
 
-        .stat-label {
-            font-size: 0.9rem;
-            color: var(--text-secondary);
-            text-transform: uppercase;
-            letter-spacing: 0.5px;
-        }
+/* ============ TOAST ============ */
+.toast-container{
+  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
+  z-index:300;display:flex;flex-direction:column-reverse;gap:10px;align-items:center;
+  pointer-events:none;width:min(92vw,420px);
+}
+.toast{
+  display:flex;align-items:center;gap:12px;
+  background:var(--surface-solid);border:1px solid var(--border);
+  border-radius:14px;padding:12px 18px;min-width:220px;
+  box-shadow:var(--shadow-lg);font-size:14px;font-weight:500;
+  animation:toastIn .35s cubic-bezier(.34,1.56,.64,1);
+  pointer-events:auto;
+}
+@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
+.toast.out{animation:toastOut .3s forwards}
+@keyframes toastOut{to{opacity:0;transform:translateY(20px) scale(.95)}}
+.toast-icon{
+  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
+  color:#fff;font-size:13px;flex-shrink:0;
+}
+.toast.success .toast-icon{background:linear-gradient(135deg,#10b981,#059669)}
+.toast.error .toast-icon{background:linear-gradient(135deg,#ef4444,#dc2626)}
+.toast.info .toast-icon{background:var(--accent-grad)}
 
-        .history-header {
-            display: flex;
-            flex-wrap: wrap;
-            justify-content: space-between;
-            align-items: center;
-            margin: 20px 0 15px;
-            gap: 15px;
-        }
+/* footer */
+footer{text-align:center;font-size:12px;color:var(--text-muted);padding:20px 0 0}
+footer i{color:var(--accent)}
 
-        .search-box {
-            flex: 1;
-            min-width: 200px;
-            display: flex;
-            align-items: center;
-            background: var(--history-bg);
-            border: 1px solid var(--border);
-            border-radius: 40px;
-            padding: 8px 16px;
-        }
-
-        .search-box i {
-            color: var(--text-secondary);
-            margin-right: 8px;
-        }
-
-        .search-box input {
-            background: transparent;
-            border: none;
-            outline: none;
-            width: 100%;
-            color: var(--text-primary);
-            font-size: 14px;
-        }
-
-        .history-list {
-            display: flex;
-            flex-direction: column;
-            gap: 15px;
-            max-height: 400px;
-            overflow-y: auto;
-            padding-right: 5px;
-        }
-
-        .history-item {
-            background: var(--history-bg);
-            border: 1px solid var(--border);
-            border-radius: 16px;
-            padding: 16px;
-            transition: 0.2s;
-        }
-
-        .history-item:hover {
-            box-shadow: 0 5px 10px rgba(0,0,0,0.05);
-        }
-
-        .history-title {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            flex-wrap: wrap;
-            margin-bottom: 8px;
-        }
-
-        .history-title .title-text {
-            font-weight: 600;
-            font-size: 1.1rem;
-            flex: 1;
-        }
-
-        .history-actions {
-            display: flex;
-            gap: 8px;
-        }
-
-        .history-actions button {
-            padding: 6px 12px;
-            font-size: 12px;
-        }
-
-        .history-preview {
-            color: var(--text-secondary);
-            font-size: 14px;
-            display: -webkit-box;
-            -webkit-line-clamp: 2;
-            -webkit-box-orient: vertical;
-            overflow: hidden;
-            margin: 8px 0 6px;
-        }
-
-        .history-meta {
-            display: flex;
-            gap: 20px;
-            font-size: 13px;
-            color: var(--text-secondary);
-        }
-
-        .toast {
-            position: fixed;
-            bottom: 30px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: var(--card-bg);
-            color: var(--text-primary);
-            padding: 12px 24px;
-            border-radius: 40px;
-            box-shadow: var(--shadow);
-            border-left: 5px solid var(--success);
-            z-index: 999;
-            opacity: 0;
-            transition: opacity 0.3s;
-            pointer-events: none;
-        }
-
-        .toast.show {
-            opacity: 1;
-        }
-
-        .version {
-            text-align: center;
-            font-size: 12px;
-            color: var(--text-secondary);
-            margin-top: 20px;
-        }
-
-        @media (max-width: 600px) {
-            .stats-grid {
-                grid-template-columns: repeat(2, 1fr);
-            }
-            .toolbar .btn {
-                padding: 8px 12px;
-                font-size: 13px;
-            }
-        }
-    </style>
+/* ============ RESPONSIVE ============ */
+@media (max-width:600px){
+  .container{padding:20px 14px 40px}
+  .brand h1{font-size:1.15rem}
+  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
+  .stat{padding:11px 8px}
+  .stat-value{font-size:1.35rem}
+  .btn{padding:8px 12px;font-size:12.5px}
+  .btn span.lbl{display:none}
+  .card{padding:18px}
+  .theme-toggle{width:56px;height:30px}
+  body.dark .theme-toggle .thumb{transform:translateX(26px)}
+  .theme-toggle .thumb{width:22px;height:22px}
+}
+</style>
 </head>
 <body>
-    <div class="container">
-        <!-- Header với dark mode toggle -->
-        <div class="card">
-            <div class="header">
-                <h2><i class="fas fa-pencil-alt" style="margin-right: 10px; color: var(--accent);"></i>Bộ đếm từ Pro</h2>
-                <div class="theme-toggle" id="themeToggle">
-                    <span class="active"><i class="fas fa-sun"></i></span>
-                    <span><i class="fas fa-moon"></i></span>
-                </div>
-            </div>
 
-            <!-- Vùng nhập liệu -->
-            <textarea id="textInput" placeholder="Nhập hoặc dán văn bản của bạn..."></textarea>
+<div class="container">
 
-            <!-- Thanh công cụ -->
-            <div class="toolbar">
-                <button class="btn btn-primary" id="copyBtn"><i class="fas fa-copy"></i> Sao chép</button>
-                <button class="btn" id="clearBtn"><i class="fas fa-trash-alt"></i> Xóa</button>
-                <button class="btn" id="uppercaseBtn"><i class="fas fa-arrow-up"></i> IN HOA</button>
-                <button class="btn" id="lowercaseBtn"><i class="fas fa-arrow-down"></i> in thường</button>
-                <button class="btn" id="trimBtn"><i class="fas fa-cut"></i> Xóa khoảng trắng thừa</button>
-                <button class="btn btn-success" id="saveHistoryBtn"><i class="fas fa-save"></i> Lưu vào lịch sử</button>
-            </div>
+  <!-- ============ HEADER ============ -->
+  <header class="app-header">
+    <div class="brand">
+      <div class="brand-logo"><i class="fas fa-feather-alt"></i></div>
+      <div>
+        <h1>Bộ đếm từ Pro</h1>
+        <p>Công cụ văn bản thông minh</p>
+      </div>
+    </div>
+    <div class="header-actions">
+      <button class="icon-btn" id="helpBtn" title="Trợ giúp (Ctrl+/)"><i class="fas fa-question"></i></button>
+      <div class="theme-toggle" id="themeToggle" title="Đổi chế độ sáng/tối">
+        <div class="thumb"><i class="fas fa-sun" id="themeIcon"></i></div>
+      </div>
+    </div>
+  </header>
 
-            <!-- Thống kê mở rộng -->
-            <div class="stats-grid" id="stats">
-                <div class="stat-item">
-                    <div class="stat-value" id="wordCount">0</div>
-                    <div class="stat-label">Từ</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="charCount">0</div>
-                    <div class="stat-label">Ký tự</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="charNoSpace">0</div>
-                    <div class="stat-label">Ký tự (ko dấu cách)</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="sentenceCount">0</div>
-                    <div class="stat-label">Câu</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="lineCount">0</div>
-                    <div class="stat-label">Dòng</div>
-                </div>
-                <div class="stat-item">
-                    <div class="stat-value" id="readingTime">0</div>
-                    <div class="stat-label">Phút đọc</div>
-                </div>
-            </div>
-        </div>
+  <!-- ============ EDITOR CARD ============ -->
+  <section class="card">
+    <div class="card-title"><i class="fas fa-pen-nib"></i> Văn bản của bạn</div>
 
-        <!-- Lịch sử văn bản -->
-        <div class="card">
-            <div class="history-header">
-                <h3><i class="fas fa-history" style="margin-right: 10px;"></i> Lịch sử</h3>
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" id="searchHistory" placeholder="Tìm kiếm...">
-                </div>
-                <div style="display: flex; gap: 10px;">
-                    <button class="btn" id="exportHistoryBtn"><i class="fas fa-download"></i> Xuất JSON</button>
-                    <button class="btn btn-danger" id="clearAllHistoryBtn"><i class="fas fa-trash"></i> Xóa tất cả</button>
-                </div>
-            </div>
-            <div id="historyList" class="history-list">
-                <!-- Lịch sử sẽ được render ở đây -->
-            </div>
-        </div>
-        <div class="version">v1.0.0 - Nâng cấp toàn diện</div>
+    <div class="editor-wrap">
+      <textarea id="textInput" class="editor" placeholder="Nhập hoặc dán văn bản của bạn vào đây..."></textarea>
+      <div class="save-indicator" id="saveIndicator"><i class="fas fa-circle-check"></i> Đã lưu</div>
     </div>
 
-    <!-- Toast thông báo -->
-    <div id="toast" class="toast"></div>
+    <!-- toolbar -->
+    <div class="toolbar">
+      <button class="btn btn-primary" id="copyBtn"><i class="fas fa-copy"></i><span class="lbl">Sao chép</span></button>
+      <button class="btn" id="undoBtn" title="Hoàn tác (Ctrl+Z)"><i class="fas fa-rotate-left"></i></button>
+      <button class="btn" id="redoBtn" title="Làm lại (Ctrl+Y)"><i class="fas fa-rotate-right"></i></button>
+      <button class="btn" id="clearBtn"><i class="fas fa-trash-alt"></i><span class="lbl">Xóa</span></button>
 
-    <script>
-        (function() {
-            // ---------- DOM elements ----------
-            const textarea = document.getElementById('textInput');
-            const wordCountEl = document.getElementById('wordCount');
-            const charCountEl = document.getElementById('charCount');
-            const charNoSpaceEl = document.getElementById('charNoSpace');
-            const sentenceCountEl = document.getElementById('sentenceCount');
-            const lineCountEl = document.getElementById('lineCount');
-            const readingTimeEl = document.getElementById('readingTime');
+      <div class="dropdown" id="caseDropdown">
+        <button class="btn dropdown-toggle"><i class="fas fa-font"></i><span class="lbl">Chữ</span> <i class="fas fa-chevron-down" style="font-size:10px"></i></button>
+        <div class="dropdown-menu">
+          <button data-action="upper"><i class="fas fa-arrow-up"></i> IN HOA toàn bộ</button>
+          <button data-action="lower"><i class="fas fa-arrow-down"></i> in thường toàn bộ</button>
+          <button data-action="capitalize"><i class="fas fa-heading"></i> Viết Hoa Đầu Từ</button>
+          <button data-action="sentence"><i class="fas fa-paragraph"></i> Sentence case</button>
+        </div>
+      </div>
 
-            const copyBtn = document.getElementById('copyBtn');
-            const clearBtn = document.getElementById('clearBtn');
-            const uppercaseBtn = document.getElementById('uppercaseBtn');
-            const lowercaseBtn = document.getElementById('lowercaseBtn');
-            const trimBtn = document.getElementById('trimBtn');
-            const saveHistoryBtn = document.getElementById('saveHistoryBtn');
-            const themeToggle = document.getElementById('themeToggle');
-            const searchInput = document.getElementById('searchHistory');
-            const exportBtn = document.getElementById('exportHistoryBtn');
-            const clearAllBtn = document.getElementById('clearAllHistoryBtn');
-            const historyListDiv = document.getElementById('historyList');
-            const toastDiv = document.getElementById('toast');
+      <div class="dropdown" id="cleanDropdown">
+        <button class="btn dropdown-toggle"><i class="fas fa-broom"></i><span class="lbl">Làm sạch</span> <i class="fas fa-chevron-down" style="font-size:10px"></i></button>
+        <div class="dropdown-menu">
+          <button data-action="trim"><i class="fas fa-scissors"></i> Xóa khoảng trắng thừa</button>
+          <button data-action="rmlines"><i class="fas fa-align-left"></i> Xóa xuống dòng</button>
+          <button data-action="rmaccents"><i class="fas fa-language"></i> Xóa dấu tiếng Việt</button>
+          <button data-action="reverse"><i class="fas fa-arrows-rotate"></i> Đảo ngược văn bản</button>
+        </div>
+      </div>
 
-            // ---------- State ----------
-            let historyData = JSON.parse(localStorage.getItem('pro_word_history')) || [];
-            let currentText = localStorage.getItem('pro_current_text') || '';
-            let darkMode = localStorage.getItem('pro_dark_mode') === 'true';
-            let searchTerm = '';
+      <div class="dropdown" id="analyzeDropdown">
+        <button class="btn dropdown-toggle"><i class="fas fa-chart-simple"></i><span class="lbl">Phân tích</span> <i class="fas fa-chevron-down" style="font-size:10px"></i></button>
+        <div class="dropdown-menu">
+          <button data-action="frequency"><i class="fas fa-ranking-star"></i> Tần suất từ</button>
+          <button data-action="stats-to-clipboard"><i class="fas fa-clipboard-list"></i> Sao chép thống kê</button>
+        </div>
+      </div>
 
-            // ---------- Khởi tạo ----------
-            textarea.value = currentText;
-            if (darkMode) document.body.classList.add('dark');
-            updateThemeToggle();
+      <button class="btn btn-success" id="saveHistoryBtn" style="margin-left:auto"><i class="fas fa-bookmark"></i><span class="lbl">Lưu lịch sử</span></button>
+    </div>
 
-            // ---------- Hàm đếm từ, câu, ... ----------
-            function updateStats() {
-                const text = textarea.value;
-                // Đếm từ (tách bằng khoảng trắng, loại bỏ khoảng trắng đầu cuối)
-                const words = text.trim() ? text.trim().split(/\s+/).filter(w => w.length > 0) : [];
-                const wordCount = words.length;
+    <!-- stats -->
+    <div class="stats-grid" id="statsGrid">
+      <div class="stat"><div class="stat-value" id="wordCount">0</div><div class="stat-label">Từ</div></div>
+      <div class="stat"><div class="stat-value" id="charCount">0</div><div class="stat-label">Ký tự</div></div>
+      <div class="stat"><div class="stat-value" id="charNoSpace">0</div><div class="stat-label">Không dấu cách</div></div>
+      <div class="stat"><div class="stat-value" id="sentenceCount">0</div><div class="stat-label">Câu</div></div>
+      <div class="stat"><div class="stat-value" id="paragraphCount">0</div><div class="stat-label">Đoạn</div></div>
+      <div class="stat"><div class="stat-value" id="uniqueWords">0</div><div class="stat-label">Từ độc nhất</div></div>
+      <div class="stat"><div class="stat-value" id="avgWordLen">0</div><div class="stat-label">Độ dài từ TB</div></div>
+      <div class="stat"><div class="stat-value" id="readingTime">0</div><div class="stat-label">Phút đọc</div></div>
+    </div>
 
-                // Đếm ký tự (bao gồm dấu cách)
-                const charCount = text.length;
-                // Ký tự không dấu cách
-                const charNoSpace = text.replace(/\s/g, '').length;
+    <!-- char limit bar -->
+    <div class="limit-bar"><div class="limit-bar-fill" id="limitFill"></div></div>
+    <div class="limit-info">
+      <span id="limitLabel">Không giới hạn ký tự</span>
+      <span id="limitValue">0 / ∞</span>
+    </div>
+  </section>
 
-                // Đếm câu (dựa trên . ! ? nhưng cần tránh trường hợp viết tắt, tạm dùng regex đơn giản)
-                const sentences = text.split(/[.!?]+/).filter(s => s.trim().length > 0);
-                const sentenceCount = sentences.length;
+  <!-- ============ HISTORY CARD ============ -->
+  <section class="card">
+    <div class="history-head">
+      <div class="card-title" style="margin:0"><i class="fas fa-clock-rotate-left"></i> Lịch sử <span class="badge" id="historyBadge" style="display:none"></span></div>
+    </div>
+    <div class="history-head">
+      <div class="search-box">
+        <i class="fas fa-search"></i>
+        <input type="text" id="searchHistory" placeholder="Tìm kiếm trong lịch sử...">
+      </div>
+      <div class="dropdown" id="exportDropdown">
+        <button class="btn dropdown-toggle"><i class="fas fa-download"></i><span class="lbl">Xuất</span></button>
+        <div class="dropdown-menu" style="right:0;left:auto">
+          <button data-action="export-json"><i class="fas fa-file-code"></i> Xuất JSON</button>
+          <button data-action="export-txt"><i class="fas fa-file-lines"></i> Xuất TXT</button>
+        </div>
+      </div>
+      <button class="btn btn-danger" id="clearAllBtn"><i class="fas fa-trash"></i><span class="lbl">Xóa tất cả</span></button>
+    </div>
+    <div class="history-list" id="historyList"></div>
+  </section>
 
-                // Đếm dòng
-                const lines = text.split(/\r\n|\r|\n/);
-                const lineCount = lines.length;
+  <footer>
+    <p>Made with <i class="fas fa-heart"></i> — Bộ đếm từ Pro <strong>v2.0</strong></p>
+  </footer>
+</div>
 
-                // Thời gian đọc (trung bình 200 từ/phút)
-                const readingTime = (wordCount / 200).toFixed(1);
+<!-- ============ MODAL: SAVE ============ -->
+<div class="modal-backdrop" id="saveModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3><i class="fas fa-bookmark" style="color:var(--accent);margin-right:8px"></i>Lưu vào lịch sử</h3>
+      <button class="modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <label style="font-size:13px;color:var(--text-muted);font-weight:500">Tên văn bản</label>
+    <input type="text" id="saveTitleInput" placeholder="Nhập tên..." style="margin-top:8px">
+    <div class="modal-actions">
+      <button class="btn modal-close">Hủy</button>
+      <button class="btn btn-primary" id="saveConfirmBtn"><i class="fas fa-check"></i> Lưu</button>
+    </div>
+  </div>
+</div>
 
-                // Cập nhật DOM
-                wordCountEl.textContent = wordCount;
-                charCountEl.textContent = charCount;
-                charNoSpaceEl.textContent = charNoSpace;
-                sentenceCountEl.textContent = sentenceCount;
-                lineCountEl.textContent = lineCount;
-                readingTimeEl.textContent = readingTime;
-            }
+<!-- ============ MODAL: HELP ============ -->
+<div class="modal-backdrop" id="helpModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3><i class="fas fa-keyboard" style="color:var(--accent);margin-right:8px"></i>Phím tắt & Trợ giúp</h3>
+      <button class="modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <table class="kbd-table">
+      <tr><td><kbd>Ctrl</kbd> + <kbd>S</kbd></td><td>Lưu vào lịch sử</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>C</kbd></td><td>Sao chép văn bản</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>Z</kbd></td><td>Hoàn tác</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>Y</kbd></td><td>Làm lại</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>K</kbd></td><td>Xóa văn bản</td></tr>
+      <tr><td><kbd>Ctrl</kbd> + <kbd>/</kbd></td><td>Mở trợ giúp này</td></tr>
+      <tr><td><kbd>Esc</kbd></td><td>Đóng hộp thoại</td></tr>
+    </table>
+    <p style="margin-top:16px;font-size:13px;color:var(--text-muted);line-height:1.6">
+      Văn bản được <strong style="color:var(--accent)">tự động lưu</strong> vào trình duyệt khi bạn gõ.
+      Lịch sử được lưu cục bộ trên thiết bị — không gửi lên server.
+    </p>
+  </div>
+</div>
 
-            // ---------- Lưu văn bản hiện tại vào localStorage (tự động) ----------
-            function saveCurrentText() {
-                localStorage.setItem('pro_current_text', textarea.value);
-            }
+<!-- ============ MODAL: FREQUENCY ============ -->
+<div class="modal-backdrop" id="freqModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3><i class="fas fa-ranking-star" style="color:var(--accent);margin-right:8px"></i>Tần suất từ</h3>
+      <button class="modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <div class="freq-list" id="freqList"></div>
+  </div>
+</div>
 
-            // ---------- Toast ----------
-            function showToast(message, type = 'success') {
-                toastDiv.textContent = message;
-                toastDiv.style.borderLeftColor = type === 'success' ? '#10b981' : '#ef4444';
-                toastDiv.classList.add('show');
-                setTimeout(() => toastDiv.classList.remove('show'), 2500);
-            }
+<!-- ============ TOASTS ============ -->
+<div class="toast-container" id="toastContainer"></div>
 
-            // ---------- Render lịch sử ----------
-            function renderHistory() {
-                const filtered = historyData.filter(item => 
-                    item.title.toLowerCase().includes(searchTerm.toLowerCase()) ||
-                    item.text.toLowerCase().includes(searchTerm.toLowerCase())
-                );
+<script>
+(function(){
+  'use strict';
 
-                if (filtered.length === 0) {
-                    historyListDiv.innerHTML = '<p style="text-align:center; color: var(--text-secondary);">Chưa có lịch sử nào.</p>';
-                    return;
-                }
+  /* ============ DOM refs ============ */
+  const $ = id => document.getElementById(id);
+  const textarea = $('textInput');
+  const saveIndicator = $('saveIndicator');
+  const historyList = $('historyList');
+  const historyBadge = $('historyBadge');
+  const toastContainer = $('toastContainer');
+  const searchInput = $('searchHistory');
+  const themeIcon = $('themeIcon');
+  const limitFill = $('limitFill');
+  const limitLabel = $('limitLabel');
+  const limitValue = $('limitValue');
 
-                let html = '';
-                filtered.forEach((item, index) => {
-                    // Tìm index gốc để thao tác xóa/sửa
-                    const originalIndex = historyData.findIndex(h => h.timestamp === item.timestamp && h.text === item.text);
-                    html += `
-                        <div class="history-item" data-index="${originalIndex}">
-                            <div class="history-title">
-                                <span class="title-text" id="title-${originalIndex}">${escapeHtml(item.title)}</span>
-                                <input type="text" id="edit-input-${originalIndex}" value="${escapeHtml(item.title)}" style="display:none; flex:1; padding:5px; border-radius:20px; border:1px solid var(--border); background:var(--card-bg); color:var(--text-primary);">
-                                <div class="history-actions">
-                                    <button class="btn edit-title-btn" data-index="${originalIndex}"><i class="fas fa-pencil-alt"></i></button>
-                                    <button class="btn copy-history-btn" data-index="${originalIndex}"><i class="fas fa-copy"></i></button>
-                                    <button class="btn btn-danger delete-history-btn" data-index="${originalIndex}"><i class="fas fa-trash"></i></button>
-                                </div>
-                            </div>
-                            <div class="history-preview">${escapeHtml(item.text.substring(0, 150))}${item.text.length > 150 ? '...' : ''}</div>
-                            <div class="history-meta">
-                                <span><i class="far fa-clock"></i> ${item.timestamp}</span>
-                                <span><i class="fas fa-language"></i> ${item.wordCount || '0'} từ</span>
-                                <span><i class="fas fa-text-height"></i> ${item.charCount || '0'} ký tự</span>
-                            </div>
-                        </div>
-                    `;
-                });
-                historyListDiv.innerHTML = html;
+  /* ============ State ============ */
+  const LS = {
+    history: 'pro_v2_history',
+    current: 'pro_v2_current',
+    dark: 'pro_v2_dark',
+    limit: 'pro_v2_limit'
+  };
+  let history = safeJSON(localStorage.getItem(LS.history), []);
+  let darkMode = localStorage.getItem(LS.dark) === '1';
+  let charLimit = parseInt(localStorage.getItem(LS.limit)) || 0;
+  let searchTerm = '';
+  let saveIndicatorTimer = null;
 
-                // Gắn sự kiện cho các nút trong lịch sử
-                document.querySelectorAll('.edit-title-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const idx = btn.getAttribute('data-index');
-                        toggleEditTitle(idx);
-                    });
-                });
+  // undo/redo stacks
+  const undoStack = [];
+  const redoStack = [];
+  let lastSnapshot = '';
 
-                document.querySelectorAll('.copy-history-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const idx = btn.getAttribute('data-index');
-                        copyFromHistory(idx);
-                    });
-                });
+  /* ============ Utils ============ */
+  function safeJSON(str, fallback){
+    try{ return str ? JSON.parse(str) : fallback; }catch(e){ return fallback; }
+  }
+  function escapeHtml(s){
+    return String(s).replace(/[&<>"']/g, m => ({
+      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
+    }[m]));
+  }
+  function debounce(fn, ms){
+    let t; return function(...args){
+      clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms);
+    };
+  }
+  function nowString(){
+    const d = new Date();
+    return d.toLocaleString('vi-VN', {hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});
+  }
+  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
 
-                document.querySelectorAll('.delete-history-btn').forEach(btn => {
-                    btn.addEventListener('click', (e) => {
-                        e.stopPropagation();
-                        const idx = btn.getAttribute('data-index');
-                        deleteHistoryItem(idx);
-                    });
-                });
-            }
+  /* ============ Toast ============ */
+  function showToast(msg, type='success'){
+    const icons = {success:'fa-check', error:'fa-xmark', info:'fa-info'};
+    const el = document.createElement('div');
+    el.className = 'toast ' + type;
+    el.innerHTML = `<div class="toast-icon"><i class="fas ${icons[type]||icons.info}"></i></div><div>${escapeHtml(msg)}</div>`;
+    toastContainer.appendChild(el);
+    setTimeout(()=>{
+      el.classList.add('out');
+      setTimeout(()=>el.remove(), 300);
+    }, 2400);
+  }
 
-            // Hàm escape HTML để tránh XSS
-            function escapeHtml(unsafe) {
-                return unsafe.replace(/[&<>"]/g, function(m) {
-                    if (m === '&') return '&amp;';
-                    if (m === '<') return '&lt;';
-                    if (m === '>') return '&gt;';
-                    if (m === '"') return '&quot;';
-                    return m;
-                });
-            }
+  /* ============ Theme ============ */
+  function applyTheme(){
+    document.body.classList.toggle('dark', darkMode);
+    themeIcon.className = darkMode ? 'fas fa-moon' : 'fas fa-sun';
+    localStorage.setItem(LS.dark, darkMode ? '1' : '0');
+  }
+  $('themeToggle').addEventListener('click', ()=>{ darkMode = !darkMode; applyTheme(); });
 
-            // Chỉnh sửa tiêu đề lịch sử
-            function toggleEditTitle(index) {
-                const titleSpan = document.getElementById(`title-${index}`);
-                const input = document.getElementById(`edit-input-${index}`);
-                if (input.style.display === 'none' || input.style.display === '') {
-                    titleSpan.style.display = 'none';
-                    input.style.display = 'flex';
-                    input.focus();
-                    const saveEdit = () => {
-                        const newTitle = input.value.trim() || 'Văn bản';
-                        historyData[index].title = newTitle;
-                        localStorage.setItem('pro_word_history', JSON.stringify(historyData));
-                        titleSpan.textContent = newTitle;
-                        titleSpan.style.display = 'inline';
-                        input.style.display = 'none';
-                        showToast('Đã cập nhật tên');
-                    };
-                    input.onblur = saveEdit;
-                    input.onkeypress = (e) => {
-                        if (e.key === 'Enter') {
-                            saveEdit();
-                        }
-                    };
-                }
-            }
+  /* ============ Text stats ============ */
+  function computeStats(text){
+    const trimmed = text.trim();
+    const words = trimmed ? trimmed.split(/\s+/).filter(Boolean) : [];
+    const wordCount = words.length;
+    const charCount = text.length;
+    const charNoSpace = text.replace(/\s/g,'').length;
+    const sentences = trimmed ? text.split(/[.!?…]+/).filter(s=>s.trim().length).length : 0;
+    const paragraphs = trimmed ? text.split(/\n\s*\n/).filter(p=>p.trim().length).length : 0;
+    const lower = words.map(w=>w.toLowerCase().replace(/[.,!?;:…"“”‘’()\[\]{}]/g,''));
+    const uniqueSet = new Set(lower.filter(Boolean));
+    const avgLen = wordCount ? (words.reduce((a,w)=>a+w.length,0)/wordCount) : 0;
+    const readMin = wordCount/200;
+    const speakMin = wordCount/130;
+    return {wordCount, charCount, charNoSpace, sentences, paragraphs, unique: uniqueSet.size, avgLen, readMin, speakMin, words: lower};
+  }
 
-            // Sao chép từ lịch sử
-            function copyFromHistory(index) {
-                const text = historyData[index].text;
-                navigator.clipboard.writeText(text).then(() => {
-                    showToast('Đã sao chép văn bản');
-                }).catch(() => showToast('Không thể sao chép', 'error'));
-            }
+  function updateStats(){
+    const text = textarea.value;
+    const s = computeStats(text);
+    $('wordCount').textContent = s.wordCount.toLocaleString('vi-VN');
+    $('charCount').textContent = s.charCount.toLocaleString('vi-VN');
+    $('charNoSpace').textContent = s.charNoSpace.toLocaleString('vi-VN');
+    $('sentenceCount').textContent = s.sentences.toLocaleString('vi-VN');
+    $('paragraphCount').textContent = s.paragraphs.toLocaleString('vi-VN');
+    $('uniqueWords').textContent = s.unique.toLocaleString('vi-VN');
+    $('avgWordLen').textContent = s.avgLen.toFixed(1);
+    $('readingTime').textContent = s.readMin < 1 && s.readMin > 0 ? '<1' : Math.round(s.readMin);
 
-            // Xóa một mục lịch sử
-            function deleteHistoryItem(index) {
-                historyData.splice(index, 1);
-                localStorage.setItem('pro_word_history', JSON.stringify(historyData));
-                renderHistory();
-                showToast('Đã xóa mục');
-            }
+    // char limit
+    if(charLimit > 0){
+      const pct = Math.min(100, (s.charCount / charLimit) * 100);
+      limitFill.style.width = pct + '%';
+      limitFill.classList.toggle('warning', pct >= 80 && pct < 100);
+      limitFill.classList.toggle('danger', pct >= 100);
+      limitLabel.textContent = `Giới hạn: ${charLimit.toLocaleString('vi-VN')} ký tự`;
+      limitValue.textContent = `${s.charCount.toLocaleString('vi-VN')} / ${charLimit.toLocaleString('vi-VN')}`;
+    } else {
+      limitFill.style.width = '0%';
+      limitLabel.textContent = 'Không giới hạn ký tự (nhấn để đặt)';
+      limitValue.textContent = `${s.charCount.toLocaleString('vi-VN')} / ∞`;
+    }
+  }
 
-            // Xóa tất cả lịch sử
-            clearAllBtn.addEventListener('click', () => {
-                if (confirm('Xóa toàn bộ lịch sử?')) {
-                    historyData = [];
-                    localStorage.removeItem('pro_word_history');
-                    renderHistory();
-                    showToast('Đã xóa toàn bộ lịch sử');
-                }
-            });
+  /* ============ Auto-save & Undo/Redo ============ */
+  function persist(){
+    localStorage.setItem(LS.current, textarea.value);
+    saveIndicator.classList.add('show');
+    clearTimeout(saveIndicatorTimer);
+    saveIndicatorTimer = setTimeout(()=>saveIndicator.classList.remove('show'), 1400);
+  }
+  function pushUndo(prev){
+    if(prev === lastSnapshot) return;
+    undoStack.push(prev);
+    if(undoStack.length > 100) undoStack.shift();
+    redoStack.length = 0;
+    lastSnapshot = textarea.value;
+  }
+  function undo(){
+    if(!undoStack.length) return showToast('Không có gì để hoàn tác', 'info');
+    const prev = undoStack.pop();
+    redoStack.push(textarea.value);
+    textarea.value = prev;
+    lastSnapshot = prev;
+    updateStats(); persist();
+    showToast('Đã hoàn tác', 'info');
+  }
+  function redo(){
+    if(!redoStack.length) return showToast('Không có gì để làm lại', 'info');
+    const next = redoStack.pop();
+    undoStack.push(textarea.value);
+    textarea.value = next;
+    lastSnapshot = next;
+    updateStats(); persist();
+    showToast('Đã làm lại', 'info');
+  }
 
-            // Xuất lịch sử ra JSON
-            exportBtn.addEventListener('click', () => {
-                const dataStr = JSON.stringify(historyData, null, 2);
-                const blob = new Blob([dataStr], { type: 'application/json' });
-                const url = URL.createObjectURL(blob);
-                const a = document.createElement('a');
-                a.href = url;
-                a.download = `word_history_${new Date().toISOString().slice(0,10)}.json`;
-                a.click();
-                URL.revokeObjectURL(url);
-                showToast('Đã xuất file JSON');
-            });
+  /* ============ History render ============ */
+  function renderHistory(){
+    const term = searchTerm.toLowerCase().trim();
+    let filtered = history.slice();
+    // pinned first
+    filtered.sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
+    if(term){
+      filtered = filtered.filter(it =>
+        it.title.toLowerCase().includes(term) || it.text.toLowerCase().includes(term)
+      );
+    }
+    // badge
+    historyBadge.style.display = history.length ? 'inline-block' : 'none';
+    historyBadge.textContent = history.length;
 
-            // Tìm kiếm lịch sử
-            searchInput.addEventListener('input', (e) => {
-                searchTerm = e.target.value;
-                renderHistory();
-            });
+    if(!filtered.length){
+      historyList.innerHTML = `<div class="empty">
+        <i class="fas fa-inbox"></i>
+        <p>${term ? 'Không tìm thấy kết quả phù hợp' : 'Chưa có văn bản nào trong lịch sử'}</p>
+      </div>`;
+      return;
+    }
 
-            // ---------- Lưu lịch sử mới ----------
-            saveHistoryBtn.addEventListener('click', () => {
-                const text = textarea.value.trim();
-                if (!text) {
-                    showToast('Vui lòng nhập văn bản', 'error');
-                    return;
-                }
+    historyList.innerHTML = filtered.map(item => `
+      <div class="history-item ${item.pinned?'pinned':''}" data-id="${item.id}">
+        <div class="h-row1">
+          <div class="h-title">${item.pinned?'<i class="fas fa-thumbtack" style="color:var(--warning);font-size:11px"></i>':''}<span class="h-title-text">${escapeHtml(item.title)}</span></div>
+          <div class="h-actions">
+            <button class="fav ${item.pinned?'active':''}" data-act="fav" title="Ghim"><i class="fas fa-thumbtack"></i></button>
+            <button data-act="rename" title="Đổi tên"><i class="fas fa-pen"></i></button>
+            <button data-act="copy" title="Sao chép"><i class="fas fa-copy"></i></button>
+            <button data-act="restore" title="Khôi phục vào editor"><i class="fas fa-arrow-up-from-bracket"></i></button>
+            <button class="del" data-act="del" title="Xóa"><i class="fas fa-trash"></i></button>
+          </div>
+        </div>
+        <div class="h-preview">${escapeHtml(item.text.slice(0,160))}${item.text.length>160?'…':''}</div>
+        <div class="h-meta">
+          <span><i class="far fa-clock"></i> ${escapeHtml(item.time)}</span>
+          <span><i class="fas fa-font"></i> ${item.wordCount.toLocaleString('vi-VN')} từ</span>
+          <span><i class="fas fa-text-height"></i> ${item.charCount.toLocaleString('vi-VN')} ký tự</span>
+        </div>
+      </div>
+    `).join('');
+  }
 
-                // Tạo tên mặc định
-                const defaultTitle = `Văn bản ${new Date().toLocaleString('vi-VN')}`;
-                // Dùng prompt để nhập tên (hoặc có thể dùng modal, nhưng tạm prompt)
-                const title = prompt('Nhập tên cho văn bản này:', defaultTitle) || defaultTitle;
+  /* History delegation */
+  historyList.addEventListener('click', e => {
+    const btn = e.target.closest('button[data-act]');
+    if(!btn) return;
+    const row = btn.closest('.history-item');
+    const id = row.dataset.id;
+    const idx = history.findIndex(h=>h.id===id);
+    if(idx === -1) return;
+    const act = btn.dataset.act;
 
-                // Lấy thống kê hiện tại
-                const words = text.trim().split(/\s+/).filter(w => w.length > 0).length;
-                const chars = text.length;
+    if(act === 'copy'){
+      navigator.clipboard.writeText(history[idx].text)
+        .then(()=>showToast('Đã sao chép văn bản'))
+        .catch(()=>showToast('Không thể sao chép','error'));
+    }
+    else if(act === 'restore'){
+      textarea.value = history[idx].text;
+      pushUndo(lastSnapshot);
+      updateStats(); persist();
+      window.scrollTo({top:0,behavior:'smooth'});
+      showToast('Đã khôi phục vào editor');
+    }
+    else if(act === 'del'){
+      if(confirm('Xóa mục này khỏi lịch sử?')){
+        history.splice(idx,1);
+        saveHistory();
+        renderHistory();
+        showToast('Đã xóa mục','info');
+      }
+    }
+    else if(act === 'fav'){
+      history[idx].pinned = !history[idx].pinned;
+      saveHistory();
+      renderHistory();
+      showToast(history[idx].pinned ? 'Đã ghim' : 'Đã bỏ ghim', 'info');
+    }
+    else if(act === 'rename'){
+      const titleEl = row.querySelector('.h-title-text');
+      const cur = history[idx].title;
+      const input = document.createElement('input');
+      input.type = 'text'; input.value = cur; input.maxLength = 100;
+      titleEl.replaceWith(input); input.focus(); input.select();
 
-                const newItem = {
-                    title: title,
-                    text: text,
-                    wordCount: words,
-                    charCount: chars,
-                    timestamp: new Date().toLocaleString('vi-VN')
-                };
-                historyData.unshift(newItem); // Thêm vào đầu
-                localStorage.setItem('pro_word_history', JSON.stringify(historyData));
-                renderHistory();
-                showToast('Đã lưu vào lịch sử');
-            });
+      const commit = () => {
+        const val = input.value.trim() || 'Văn bản';
+        history[idx].title = val;
+        saveHistory(); renderHistory();
+        showToast('Đã đổi tên');
+      };
+      input.addEventListener('blur', commit);
+      input.addEventListener('keydown', ev => {
+        if(ev.key === 'Enter'){ ev.preventDefault(); input.blur(); }
+        if(ev.key === 'Escape'){ renderHistory(); }
+      });
+    }
+  });
 
-            // ---------- Xử lý nút công cụ ----------
-            copyBtn.addEventListener('click', () => {
-                const text = textarea.value;
-                if (!text.trim()) {
-                    showToast('Không có nội dung', 'error');
-                    return;
-                }
-                navigator.clipboard.writeText(text).then(() => showToast('Đã sao chép'));
-            });
+  function saveHistory(){ localStorage.setItem(LS.history, JSON.stringify(history)); }
+  const saveHistoryDebounced = debounce(saveHistory, 300);
 
-            clearBtn.addEventListener('click', () => {
-                if (textarea.value.trim() && confirm('Xóa văn bản hiện tại?')) {
-                    textarea.value = '';
-                    updateStats();
-                    saveCurrentText();
-                    showToast('Đã xóa');
-                }
-            });
+  /* ============ Save modal ============ */
+  const saveModal = $('saveModal');
+  const saveTitleInput = $('saveTitleInput');
 
-            uppercaseBtn.addEventListener('click', () => {
-                textarea.value = textarea.value.toLocaleUpperCase('vi');
-                updateStats();
-                saveCurrentText();
-            });
+  function openSaveModal(){
+    const text = textarea.value.trim();
+    if(!text) return showToast('Vui lòng nhập văn bản trước', 'error');
+    saveTitleInput.value = `Văn bản ${new Date().toLocaleString('vi-VN')}`;
+    saveModal.classList.add('open');
+    setTimeout(()=>{ saveTitleInput.focus(); saveTitleInput.select(); }, 150);
+  }
+  function closeModal(el){ el.classList.remove('open'); }
 
-            lowercaseBtn.addEventListener('click', () => {
-                textarea.value = textarea.value.toLocaleLowerCase('vi');
-                updateStats();
-                saveCurrentText();
-            });
+  $('saveHistoryBtn').addEventListener('click', openSaveModal);
+  $('saveConfirmBtn').addEventListener('click', ()=>{
+    const text = textarea.value.trim();
+    const title = saveTitleInput.value.trim() || 'Văn bản';
+    const s = computeStats(text);
+    history.unshift({
+      id: uid(),
+      title,
+      text,
+      wordCount: s.wordCount,
+      charCount: s.charCount,
+      time: nowString(),
+      pinned: false
+    });
+    if(history.length > 200) history.length = 200;
+    saveHistory();
+    renderHistory();
+    closeModal(saveModal);
+    showToast('Đã lưu vào lịch sử');
+  });
 
-            trimBtn.addEventListener('click', () => {
-                // Xóa khoảng trắng đầu cuối và chuẩn hóa khoảng trắng giữa các từ
-                let text = textarea.value;
-                text = text.replace(/^\s+|\s+$/g, ''); // trim
-                text = text.replace(/\s+/g, ' '); // nhiều space -> 1 space
-                textarea.value = text;
-                updateStats();
-                saveCurrentText();
-                showToast('Đã chuẩn hóa khoảng trắng');
-            });
+  /* ============ Modal close ============ */
+  document.querySelectorAll('.modal-backdrop').forEach(m => {
+    m.addEventListener('click', e => { if(e.target === m) closeModal(m); });
+    m.querySelectorAll('.modal-close').forEach(b => b.addEventListener('click', ()=>closeModal(m)));
+  });
+  document.addEventListener('keydown', e => {
+    if(e.key === 'Escape') document.querySelectorAll('.modal-backdrop.open').forEach(closeModal);
+  });
 
-            // ---------- Dark mode ----------
-            function updateThemeToggle() {
-                const spans = themeToggle.children;
-                if (darkMode) {
-                    spans[0].classList.remove('active');
-                    spans[1].classList.add('active');
-                } else {
-                    spans[0].classList.add('active');
-                    spans[1].classList.remove('active');
-                }
-            }
+  /* ============ Help modal ============ */
+  $('helpBtn').addEventListener('click', ()=>$('helpModal').classList.add('open'));
 
-            themeToggle.addEventListener('click', () => {
-                darkMode = !darkMode;
-                document.body.classList.toggle('dark', darkMode);
-                localStorage.setItem('pro_dark_mode', darkMode);
-                updateThemeToggle();
-            });
+  /* ============ Frequency modal ============ */
+  function openFrequency(){
+    const text = textarea.value.trim();
+    if(!text) return showToast('Chưa có văn bản để phân tích', 'error');
+    const s = computeStats(text);
+    const map = new Map();
+    s.words.filter(w=>w.length>1).forEach(w => map.set(w, (map.get(w)||0)+1));
+    const sorted = [...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,30);
+    if(!sorted.length) return showToast('Không đủ dữ liệu', 'info');
+    const max = sorted[0][1];
+    $('freqList').innerHTML = sorted.map(([w,c])=>`
+      <div class="freq-item">
+        <div class="freq-word">${escapeHtml(w)}</div>
+        <div class="freq-bar"><div style="width:${(c/max)*100}%"></div></div>
+        <div class="freq-count">${c}</div>
+      </div>
+    `).join('');
+    $('freqModal').classList.add('open');
+  }
 
-            // ---------- Sự kiện nhập liệu ----------
-            textarea.addEventListener('input', () => {
-                updateStats();
-                saveCurrentText();
-            });
+  /* ============ Toolbar actions ============ */
+  function applyTransform(fn){
+    const prev = textarea.value;
+    const next = fn(prev);
+    if(next === prev) return showToast('Không có gì thay đổi', 'info');
+    pushUndo(prev);
+    textarea.value = next;
+    updateStats(); persist();
+  }
 
-            // ---------- Khởi tạo lần đầu ----------
-            updateStats();
-            renderHistory();
+  const transforms = {
+    upper: t => t.toLocaleUpperCase('vi'),
+    lower: t => t.toLocaleLowerCase('vi'),
+    capitalize: t => t.replace(/\b\p{L}/gu, c => c.toLocaleUpperCase('vi')),
+    sentence: t => t.toLowerCase().replace(/(^\s*\p{L}|[.!?…]\s+\p{L})/gu, c => c.toLocaleUpperCase('vi')),
+    trim: t => t.replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim(),
+    rmlines: t => t.replace(/\s*\n\s*/g, ' ').replace(/\s+/g,' ').trim(),
+    rmaccents: t => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D'),
+    reverse: t => t.split('\n').map(line => [...line].reverse().join('')).join('\n')
+  };
 
-            // Auto-save khi rời trang (cũng đã lưu qua input)
-            window.addEventListener('beforeunload', () => {
-                saveCurrentText();
-            });
+  // dropdown toggles
+  document.querySelectorAll('.dropdown').forEach(dd => {
+    const toggle = dd.querySelector('.dropdown-toggle');
+    if(!toggle) return;
+    toggle.addEventListener('click', e => {
+      e.stopPropagation();
+      const wasOpen = dd.classList.contains('open');
+      document.querySelectorAll('.dropdown.open').forEach(o=>o.classList.remove('open'));
+      if(!wasOpen) dd.classList.add('open');
+    });
+  });
+  document.addEventListener('click', ()=>document.querySelectorAll('.dropdown.open').forEach(o=>o.classList.remove('open')));
 
-        })();
-    </script>
+  // handle dropdown menu actions
+  document.addEventListener('click', e => {
+    const btn = e.target.closest('.dropdown-menu button[data-action]');
+    if(!btn) return;
+    const act = btn.dataset.action;
+    if(transforms[act]) applyTransform(transforms[act]);
+    else if(act === 'frequency') openFrequency();
+    else if(act === 'stats-to-clipboard') copyStats();
+    else if(act === 'export-json') exportJSON();
+    else if(act === 'export-txt') exportTXT();
+  });
+
+  function copyStats(){
+    const s = computeStats(textarea.value);
+    const txt = `THỐNG KÊ VĂN BẢN
+─────────────────────
+Từ: ${s.wordCount}
+Ký tự: ${s.charCount}
+Ký tự (không dấu cách): ${s.charNoSpace}
+Câu: ${s.sentences}
+Đoạn: ${s.paragraphs}
+Từ độc nhất: ${s.unique}
+Độ dài từ trung bình: ${s.avgLen.toFixed(1)}
+Thời gian đọc: ~${s.readMin.toFixed(1)} phút
+Thời gian nói: ~${s.speakMin.toFixed(1)} phút`;
+    navigator.clipboard.writeText(txt)
+      .then(()=>showToast('Đã sao chép thống kê'))
+      .catch(()=>showToast('Không thể sao chép','error'));
+  }
+
+  /* ============ Export ============ */
+  function download(filename, content, type){
+    const blob = new Blob([content], {type});
+    const url = URL.createObjectURL(blob);
+    const a = document.createElement('a');
+    a.href = url; a.download = filename; a.click();
+    URL.revokeObjectURL(url);
+  }
+  function exportJSON(){
+    if(!history.length) return showToast('Lịch sử trống','info');
+    const date = new Date().toISOString().slice(0,10);
+    download(`word_history_${date}.json`, JSON.stringify(history,null,2), 'application/json');
+    showToast('Đã xuất JSON');
+  }
+  function exportTXT(){
+    if(!history.length) return showToast('Lịch sử trống','info');
+    const date = new Date().toISOString().slice(0,10);
+    const content = history.map((h,i)=>
+      `#${i+1} — ${h.title}\n[${h.time}] ${h.wordCount} từ, ${h.charCount} ký tự\n${'─'.repeat(40)}\n${h.text}\n`
+    ).join('\n\n');
+    download(`word_history_${date}.txt`, content, 'text/plain');
+    showToast('Đã xuất TXT');
+  }
+
+  /* ============ Buttons ============ */
+  $('copyBtn').addEventListener('click', ()=>{
+    const t = textarea.value;
+    if(!t.trim()) return showToast('Không có nội dung', 'error');
+    navigator.clipboard.writeText(t)
+      .then(()=>showToast('Đã sao chép'))
+      .catch(()=>showToast('Không thể sao chép','error'));
+  });
+  $('clearBtn').addEventListener('click', ()=>{
+    if(!textarea.value.trim()) return;
+    if(confirm('Xóa văn bản hiện tại?')){
+      pushUndo(textarea.value);
+      textarea.value = '';
+      updateStats(); persist();
+      showToast('Đã xóa','info');
+    }
+  });
+  $('undoBtn').addEventListener('click', undo);
+  $('redoBtn').addEventListener('click', redo);
+  $('clearAllBtn').addEventListener('click', ()=>{
+    if(!history.length) return showToast('Lịch sử đã trống', 'info');
+    if(confirm('Xóa toàn bộ lịch sử? Hành động này không thể hoàn tác.')){
+      history = [];
+      saveHistory();
+      renderHistory();
+      showToast('Đã xóa toàn bộ lịch sử','info');
+    }
+  });
+
+  /* ============ Char limit click ============ */
+  limitLabel.addEventListener('click', ()=>{
+    const v = prompt('Đặt giới hạn ký tự (0 = không giới hạn):', charLimit || 0);
+    if(v === null) return;
+    const n = parseInt(v);
+    if(isNaN(n) || n < 0) return showToast('Giá trị không hợp lệ','error');
+    charLimit = n;
+    localStorage.setItem(LS.limit, charLimit);
+    updateStats();
+  });
+
+  /* ============ Search ============ */
+  const debouncedSearch = debounce(()=>renderHistory(), 200);
+  searchInput.addEventListener('input', e => { searchTerm = e.target.value; debouncedSearch(); });
+
+  /* ============ Input handling ============ */
+  const persistDebounced = debounce(persist, 400);
+  textarea.addEventListener('input', ()=>{
+    pushUndo(lastSnapshot);
+    updateStats();
+    persistDebounced();
+  });
+
+  /* ============ Keyboard shortcuts ============ */
+  document.addEventListener('keydown', e => {
+    const ctrl = e.ctrlKey || e.metaKey;
+    if(!ctrl) return;
+    const k = e.key.toLowerCase();
+    if(k === 's'){ e.preventDefault(); openSaveModal(); }
+    else if(k === 'c' && e.shiftKey){ e.preventDefault(); $('copyBtn').click(); }
+    else if(k === 'z' && !e.shiftKey){ e.preventDefault(); undo(); }
+    else if(k === 'y' || (k === 'z' && e.shiftKey)){ e.preventDefault(); redo(); }
+    else if(k === 'k'){ e.preventDefault(); $('clearBtn').click(); }
+    else if(k === '/'){ e.preventDefault(); $('helpModal').classList.add('open'); }
+  });
+
+  /* ============ Init ============ */
+  function init(){
+    applyTheme();
+    textarea.value = localStorage.getItem(LS.current) || '';
+    lastSnapshot = textarea.value;
+    updateStats();
+    renderHistory();
+    // welcome
+    if(!history.length && textarea.value.trim()){
+      setTimeout(()=>showToast('Văn bản cũ đã được phục hồi','info'), 600);
+    }
+  }
+  init();
+
+  window.addEventListener('beforeunload', ()=>persist());
+})();
+</script>
 </body>
 </html>
