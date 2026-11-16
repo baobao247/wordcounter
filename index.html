@@ -10,408 +10,12 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
 <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet">
 <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.2/css/all.min.css">
-<style>
-/* ============ RESET & TOKENS ============ */
-*,*::before,*::after{margin:0;padding:0;box-sizing:border-box}
-:root{
-  --bg:#f4f6fb;
-  --bg-2:#eef1f9;
-  --surface:rgba(255,255,255,.72);
-  --surface-solid:#ffffff;
-  --surface-2:#f8fafc;
-  --text:#0f172a;
-  --text-muted:#64748b;
-  --border:rgba(15,23,42,.08);
-  --border-strong:rgba(15,23,42,.14);
-  --accent:#6366f1;
-  --accent-2:#8b5cf6;
-  --accent-soft:rgba(99,102,241,.12);
-  --accent-grad:linear-gradient(135deg,#6366f1 0%,#8b5cf6 50%,#ec4899 100%);
-  --success:#10b981;
-  --warning:#f59e0b;
-  --danger:#ef4444;
-  --shadow-sm:0 1px 2px rgba(15,23,42,.04);
-  --shadow:0 4px 24px -8px rgba(15,23,42,.12);
-  --shadow-lg:0 24px 60px -20px rgba(15,23,42,.25);
-  --radius:14px;
-  --radius-lg:22px;
-  --radius-pill:999px;
-  --tr:all .25s cubic-bezier(.4,0,.2,1);
-}
-body.dark{
-  --bg:#0b1020;
-  --bg-2:#0f1629;
-  --surface:rgba(24,31,52,.72);
-  --surface-solid:#151c33;
-  --surface-2:#1a2140;
-  --text:#e8ecf6;
-  --text-muted:#94a3b8;
-  --border:rgba(148,163,184,.14);
-  --border-strong:rgba(148,163,184,.24);
-  --accent-soft:rgba(99,102,241,.2);
-  --shadow:0 4px 24px -8px rgba(0,0,0,.5);
-  --shadow-lg:0 24px 60px -20px rgba(0,0,0,.7);
-}
-
-body{
-  font-family:'Inter',system-ui,sans-serif;
-  background:var(--bg);
-  color:var(--text);
-  min-height:100vh;
-  line-height:1.55;
-  transition:background .35s,color .35s;
-  overflow-x:hidden;
-  -webkit-font-smoothing:antialiased;
-}
-/* animated mesh background */
-body::before{
-  content:'';position:fixed;inset:-20%;z-index:-1;
-  background:
-    radial-gradient(circle at 20% 20%,rgba(99,102,241,.18),transparent 40%),
-    radial-gradient(circle at 80% 10%,rgba(236,72,153,.14),transparent 40%),
-    radial-gradient(circle at 60% 90%,rgba(139,92,246,.16),transparent 45%);
-  animation:mesh 22s ease-in-out infinite alternate;
-  filter:blur(20px);
-}
-body.dark::before{opacity:.55}
-@keyframes mesh{
-  0%{transform:translate(0,0) scale(1)}
-  50%{transform:translate(2%,-2%) scale(1.05)}
-  100%{transform:translate(-2%,2%) scale(1)}
-}
-
-/* ============ LAYOUT ============ */
-.container{max-width:1100px;margin:0 auto;padding:28px 20px 60px}
-header.app-header{
-  display:flex;justify-content:space-between;align-items:center;
-  gap:16px;flex-wrap:wrap;margin-bottom:24px;
-}
-.brand{display:flex;align-items:center;gap:14px}
-.brand-logo{
-  width:48px;height:48px;border-radius:14px;
-  background:var(--accent-grad);color:#fff;
-  display:grid;place-items:center;font-size:22px;
-  box-shadow:0 8px 24px -6px rgba(99,102,241,.5);
-  position:relative;overflow:hidden;
-}
-.brand-logo::after{
-  content:'';position:absolute;inset:0;
-  background:linear-gradient(135deg,transparent 40%,rgba(255,255,255,.35) 50%,transparent 60%);
-  animation:shine 4s linear infinite;
-}
-@keyframes shine{0%{transform:translateX(-100%)}100%{transform:translateX(100%)}}
-.brand h1{font-size:1.35rem;font-weight:800;letter-spacing:-.02em}
-.brand p{font-size:.78rem;color:var(--text-muted);font-weight:500}
-
-.header-actions{display:flex;gap:10px;align-items:center}
-
-/* icon button */
-.icon-btn{
-  width:42px;height:42px;border-radius:12px;
-  background:var(--surface-solid);border:1px solid var(--border);
-  color:var(--text);cursor:pointer;
-  display:grid;place-items:center;font-size:16px;
-  transition:var(--tr);position:relative;
-  backdrop-filter:blur(12px);
-}
-.icon-btn:hover{transform:translateY(-2px);border-color:var(--accent);color:var(--accent);box-shadow:var(--shadow)}
-.icon-btn .badge{
-  position:absolute;top:-4px;right:-4px;
-  background:var(--accent);color:#fff;font-size:10px;font-weight:700;
-  border-radius:999px;padding:2px 6px;min-width:18px;text-align:center;
-}
-
-/* theme toggle */
-.theme-toggle{
-  width:64px;height:34px;border-radius:999px;
-  background:var(--surface-solid);border:1px solid var(--border);
-  cursor:pointer;position:relative;transition:var(--tr);
-  backdrop-filter:blur(12px);
-}
-.theme-toggle .thumb{
-  position:absolute;top:3px;left:3px;width:26px;height:26px;
-  border-radius:50%;background:var(--accent-grad);
-  display:grid;place-items:center;color:#fff;font-size:12px;
-  transition:transform .35s cubic-bezier(.34,1.56,.64,1);
-  box-shadow:0 4px 10px -2px rgba(99,102,241,.5);
-}
-body.dark .theme-toggle .thumb{transform:translateX(30px)}
-.theme-toggle:hover{border-color:var(--accent)}
-
-/* ============ CARD ============ */
-.card{
-  background:var(--surface);
-  border:1px solid var(--border);
-  border-radius:var(--radius-lg);
-  padding:24px;
-  box-shadow:var(--shadow);
-  backdrop-filter:blur(20px);
-  -webkit-backdrop-filter:blur(20px);
-  margin-bottom:22px;
-  transition:var(--tr);
-}
-.card-title{
-  display:flex;align-items:center;gap:10px;
-  font-size:1.05rem;font-weight:700;margin-bottom:16px;
-}
-.card-title i{color:var(--accent)}
-
-/* ============ EDITOR ============ */
-.editor-wrap{position:relative}
-textarea.editor{
-  width:100%;min-height:260px;padding:18px 20px;
-  font-family:'Inter',sans-serif;font-size:16px;line-height:1.7;
-  background:var(--surface-2);color:var(--text);
-  border:1.5px solid var(--border);border-radius:var(--radius);
-  resize:vertical;outline:none;transition:var(--tr);
-}
-textarea.editor:focus{
-  border-color:var(--accent);
-  box-shadow:0 0 0 4px var(--accent-soft);
-  background:var(--surface-solid);
-}
-textarea.editor::placeholder{color:var(--text-muted);opacity:.7}
-
-.save-indicator{
-  position:absolute;top:14px;right:16px;
-  font-size:11px;color:var(--text-muted);
-  background:var(--surface-solid);padding:4px 10px;border-radius:999px;
-  border:1px solid var(--border);
-  display:flex;align-items:center;gap:6px;
-  opacity:0;transition:opacity .3s;pointer-events:none;
-}
-.save-indicator.show{opacity:1}
-.save-indicator i{color:var(--success)}
-
-/* ============ TOOLBAR ============ */
-.toolbar{
-  display:flex;flex-wrap:wrap;gap:8px;margin-top:16px;
-  align-items:center;
-}
-.btn{
-  display:inline-flex;align-items:center;gap:8px;
-  padding:9px 16px;border-radius:10px;
-  font-family:inherit;font-size:13.5px;font-weight:600;
-  background:var(--surface-solid);color:var(--text);
-  border:1px solid var(--border);cursor:pointer;
-  transition:var(--tr);white-space:nowrap;position:relative;overflow:hidden;
-}
-.btn:hover{transform:translateY(-2px);box-shadow:var(--shadow);border-color:var(--border-strong)}
-.btn:active{transform:translateY(0)}
-.btn i{font-size:13px}
-.btn-primary{background:var(--accent-grad);color:#fff;border:none;box-shadow:0 6px 18px -6px rgba(99,102,241,.55)}
-.btn-primary:hover{box-shadow:0 10px 24px -6px rgba(99,102,241,.7)}
-.btn-success{background:linear-gradient(135deg,#10b981,#059669);color:#fff;border:none}
-.btn-danger{background:linear-gradient(135deg,#ef4444,#dc2626);color:#fff;border:none}
-.btn-ghost{background:transparent}
-
-/* dropdown */
-.dropdown{position:relative}
-.dropdown-menu{
-  position:absolute;top:calc(100% + 8px);left:0;z-index:50;
-  background:var(--surface-solid);border:1px solid var(--border);
-  border-radius:14px;padding:8px;min-width:230px;
-  box-shadow:var(--shadow-lg);
-  opacity:0;visibility:hidden;transform:translateY(-8px);
-  transition:var(--tr);
-}
-.dropdown.open .dropdown-menu{opacity:1;visibility:visible;transform:translateY(0)}
-.dropdown-menu button{
-  width:100%;text-align:left;padding:9px 12px;
-  background:transparent;border:none;border-radius:8px;
-  color:var(--text);font-family:inherit;font-size:13.5px;font-weight:500;
-  cursor:pointer;display:flex;align-items:center;gap:10px;
-  transition:background .15s;
-}
-.dropdown-menu button:hover{background:var(--accent-soft);color:var(--accent)}
-.dropdown-menu hr{border:none;border-top:1px solid var(--border);margin:6px 4px}
-.dropdown-menu button i{width:16px;text-align:center;color:var(--text-muted);font-size:13px}
-.dropdown-menu button:hover i{color:var(--accent)}
-
-/* ============ STATS ============ */
-.stats-grid{
-  display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
-  gap:12px;margin-top:20px;
-}
-.stat{
-  background:var(--surface-2);border:1px solid var(--border);
-  border-radius:14px;padding:14px 12px;text-align:center;
-  transition:var(--tr);position:relative;overflow:hidden;
-}
-.stat::before{
-  content:'';position:absolute;top:0;left:0;right:0;height:3px;
-  background:var(--accent-grad);opacity:0;transition:opacity .3s;
-}
-.stat:hover{transform:translateY(-3px);border-color:var(--border-strong);box-shadow:var(--shadow)}
-.stat:hover::before{opacity:1}
-.stat-value{
-  font-size:1.7rem;font-weight:800;
-  background:var(--accent-grad);-webkit-background-clip:text;-webkit-text-fill-color:transparent;
-  background-clip:text;line-height:1.1;font-variant-numeric:tabular-nums;
-}
-.stat-label{
-  font-size:.7rem;font-weight:600;color:var(--text-muted);
-  text-transform:uppercase;letter-spacing:.06em;margin-top:4px;
-}
-.stat.clickable{cursor:pointer}
-
-/* progress bar */
-.limit-bar{height:6px;background:var(--border);border-radius:999px;margin-top:16px;overflow:hidden;position:relative}
-.limit-bar-fill{height:100%;background:var(--accent-grad);width:0;border-radius:999px;transition:width .3s,background .3s}
-.limit-bar-fill.warning{background:linear-gradient(90deg,#f59e0b,#f97316)}
-.limit-bar-fill.danger{background:linear-gradient(90deg,#ef4444,#dc2626)}
-.limit-info{display:flex;justify-content:space-between;font-size:11.5px;color:var(--text-muted);margin-top:6px;font-weight:500}
-
-/* ============ HISTORY ============ */
-.history-head{display:flex;flex-wrap:wrap;gap:12px;align-items:center;margin-bottom:16px}
-.search-box{
-  flex:1;min-width:200px;display:flex;align-items:center;gap:10px;
-  background:var(--surface-2);border:1px solid var(--border);
-  border-radius:12px;padding:10px 14px;transition:var(--tr);
-}
-.search-box:focus-within{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.search-box i{color:var(--text-muted);font-size:14px}
-.search-box input{flex:1;background:transparent;border:none;outline:none;color:var(--text);font-family:inherit;font-size:14px}
-
-.history-list{display:flex;flex-direction:column;gap:12px;max-height:520px;overflow-y:auto;padding-right:4px}
-.history-list::-webkit-scrollbar{width:8px}
-.history-list::-webkit-scrollbar-thumb{background:var(--border-strong);border-radius:4px}
-
-.history-item{
-  background:var(--surface-2);border:1px solid var(--border);
-  border-radius:14px;padding:14px 16px;transition:var(--tr);
-  animation:fadeIn .35s ease;
-}
-@keyframes fadeIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
-.history-item:hover{border-color:var(--border-strong);box-shadow:var(--shadow)}
-.history-item.pinned{border-left:3px solid var(--warning)}
-
-.h-row1{display:flex;align-items:center;gap:10px;margin-bottom:6px}
-.h-title{font-weight:600;font-size:14.5px;flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;display:flex;align-items:center;gap:8px}
-.h-title input{
-  flex:1;background:var(--surface-solid);border:1px solid var(--accent);
-  border-radius:8px;padding:5px 10px;font-family:inherit;font-size:14px;color:var(--text);outline:none;
-}
-.h-actions{display:flex;gap:4px}
-.h-actions button{
-  width:30px;height:30px;border-radius:8px;border:none;
-  background:transparent;color:var(--text-muted);cursor:pointer;
-  display:grid;place-items:center;font-size:12.5px;transition:var(--tr);
-}
-.h-actions button:hover{background:var(--accent-soft);color:var(--accent);transform:scale(1.08)}
-.h-actions button.fav.active{color:var(--warning)}
-.h-actions button.del:hover{background:rgba(239,68,68,.12);color:var(--danger)}
-
-.h-preview{
-  color:var(--text-muted);font-size:13px;line-height:1.5;
-  display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;
-  margin:6px 0 8px;
-}
-.h-meta{display:flex;flex-wrap:wrap;gap:14px;font-size:11.5px;color:var(--text-muted);font-weight:500}
-.h-meta span{display:inline-flex;align-items:center;gap:5px}
-.h-meta i{color:var(--accent);font-size:10.5px}
-
-.empty{
-  text-align:center;padding:40px 20px;color:var(--text-muted);
-}
-.empty i{font-size:44px;opacity:.25;margin-bottom:12px;display:block}
-.empty p{font-size:14px;font-weight:500}
-
-/* ============ MODAL ============ */
-.modal-backdrop{
-  position:fixed;inset:0;background:rgba(15,23,42,.55);
-  backdrop-filter:blur(6px);-webkit-backdrop-filter:blur(6px);
-  z-index:200;display:grid;place-items:center;padding:20px;
-  opacity:0;visibility:hidden;transition:var(--tr);
-}
-.modal-backdrop.open{opacity:1;visibility:visible}
-.modal{
-  background:var(--surface-solid);border:1px solid var(--border);
-  border-radius:20px;padding:24px;width:100%;max-width:520px;
-  box-shadow:var(--shadow-lg);transform:scale(.95);transition:var(--tr);
-  max-height:85vh;overflow-y:auto;
-}
-.modal-backdrop.open .modal{transform:scale(1)}
-.modal-head{display:flex;justify-content:space-between;align-items:center;margin-bottom:18px}
-.modal-head h3{font-size:1.1rem;font-weight:700}
-.modal-head button{
-  width:32px;height:32px;border-radius:9px;border:none;
-  background:var(--surface-2);color:var(--text-muted);cursor:pointer;transition:var(--tr);
-}
-.modal-head button:hover{background:var(--danger);color:#fff}
-.modal input[type=text]{
-  width:100%;padding:12px 14px;border-radius:12px;
-  border:1.5px solid var(--border);background:var(--surface-2);
-  color:var(--text);font-family:inherit;font-size:15px;outline:none;transition:var(--tr);
-}
-.modal input[type=text]:focus{border-color:var(--accent);box-shadow:0 0 0 4px var(--accent-soft)}
-.modal-actions{display:flex;gap:10px;justify-content:flex-end;margin-top:18px}
-
-/* frequency list */
-.freq-list{display:flex;flex-direction:column;gap:8px;max-height:50vh;overflow-y:auto}
-.freq-item{display:flex;align-items:center;gap:12px;padding:9px 12px;background:var(--surface-2);border-radius:10px}
-.freq-word{font-family:'JetBrains Mono',monospace;font-weight:600;font-size:14px;min-width:80px}
-.freq-bar{flex:1;height:8px;background:var(--border);border-radius:999px;overflow:hidden}
-.freq-bar div{height:100%;background:var(--accent-grad);border-radius:999px;transition:width .5s}
-.freq-count{font-size:13px;font-weight:700;color:var(--accent);min-width:36px;text-align:right}
-
-/* shortcuts table */
-.kbd-table{width:100%;border-collapse:collapse;font-size:14px}
-.kbd-table td{padding:9px 4px;border-bottom:1px solid var(--border)}
-.kbd-table td:last-child{text-align:right;color:var(--text-muted);font-size:12.5px}
-kbd{
-  display:inline-block;padding:3px 8px;border-radius:6px;
-  background:var(--surface-2);border:1px solid var(--border-strong);
-  font-family:'JetBrains Mono',monospace;font-size:11.5px;font-weight:600;
-  box-shadow:0 2px 0 var(--border-strong);
-}
-
-/* ============ TOAST ============ */
-.toast-container{
-  position:fixed;bottom:24px;left:50%;transform:translateX(-50%);
-  z-index:300;display:flex;flex-direction:column-reverse;gap:10px;align-items:center;
-  pointer-events:none;width:min(92vw,420px);
-}
-.toast{
-  display:flex;align-items:center;gap:12px;
-  background:var(--surface-solid);border:1px solid var(--border);
-  border-radius:14px;padding:12px 18px;min-width:220px;
-  box-shadow:var(--shadow-lg);font-size:14px;font-weight:500;
-  animation:toastIn .35s cubic-bezier(.34,1.56,.64,1);
-  pointer-events:auto;
-}
-@keyframes toastIn{from{opacity:0;transform:translateY(20px) scale(.95)}to{opacity:1;transform:translateY(0) scale(1)}}
-.toast.out{animation:toastOut .3s forwards}
-@keyframes toastOut{to{opacity:0;transform:translateY(20px) scale(.95)}}
-.toast-icon{
-  width:30px;height:30px;border-radius:50%;display:grid;place-items:center;
-  color:#fff;font-size:13px;flex-shrink:0;
-}
-.toast.success .toast-icon{background:linear-gradient(135deg,#10b981,#059669)}
-.toast.error .toast-icon{background:linear-gradient(135deg,#ef4444,#dc2626)}
-.toast.info .toast-icon{background:var(--accent-grad)}
-
-/* footer */
-footer{text-align:center;font-size:12px;color:var(--text-muted);padding:20px 0 0}
-footer i{color:var(--accent)}
-
-/* ============ RESPONSIVE ============ */
-@media (max-width:600px){
-  .container{padding:20px 14px 40px}
-  .brand h1{font-size:1.15rem}
-  .stats-grid{grid-template-columns:repeat(2,1fr);gap:10px}
-  .stat{padding:11px 8px}
-  .stat-value{font-size:1.35rem}
-  .btn{padding:8px 12px;font-size:12.5px}
-  .btn span.lbl{display:none}
-  .card{padding:18px}
-  .theme-toggle{width:56px;height:30px}
-  body.dark .theme-toggle .thumb{transform:translateX(26px)}
-  .theme-toggle .thumb{width:22px;height:22px}
-}
-</style>
+<link rel="stylesheet" href="css/style.css">
 </head>
 <body>
+
+<!-- Back to Hub Navigation -->
+<a href="../index.html" class="hub-pill" title="Quay lại Master Hub"><i class="fas fa-arrow-left"></i> <span>Hub</span></a>
 
 <div class="container">
 
@@ -446,7 +50,9 @@ footer i{color:var(--accent)}
       <button class="btn btn-primary" id="copyBtn"><i class="fas fa-copy"></i><span class="lbl">Sao chép</span></button>
       <button class="btn" id="undoBtn" title="Hoàn tác (Ctrl+Z)"><i class="fas fa-rotate-left"></i></button>
       <button class="btn" id="redoBtn" title="Làm lại (Ctrl+Y)"><i class="fas fa-rotate-right"></i></button>
-      <button class="btn" id="clearBtn"><i class="fas fa-trash-alt"></i><span class="lbl">Xóa</span></button>
+      
+        <button class="btn" id="micBtn" title="Nhập liệu bằng giọng nói tiếng Việt"><i class="fas fa-microphone"></i><span class="lbl">Nói</span></button>
+        <button class="btn" id="clearBtn"><i class="fas fa-trash-alt"></i><span class="lbl">Xóa</span></button>
 
       <div class="dropdown" id="caseDropdown">
         <button class="btn dropdown-toggle"><i class="fas fa-font"></i><span class="lbl">Chữ</span> <i class="fas fa-chevron-down" style="font-size:10px"></i></button>
@@ -464,6 +70,11 @@ footer i{color:var(--accent)}
           <button data-action="trim"><i class="fas fa-scissors"></i> Xóa khoảng trắng thừa</button>
           <button data-action="rmlines"><i class="fas fa-align-left"></i> Xóa xuống dòng</button>
           <button data-action="rmaccents"><i class="fas fa-language"></i> Xóa dấu tiếng Việt</button>
+          <button data-action="dedup"><i class="fas fa-filter"></i> Lọc trùng dòng (Deduplicate)</button>
+          <button data-action="sortaz"><i class="fas fa-arrow-down-a-z"></i> Sắp xếp dòng (A → Z)</button>
+          <button data-action="sortza"><i class="fas fa-arrow-up-z-a"></i> Sắp xếp dòng (Z → A)</button>
+
+          <button data-action="slug"><i class="fas fa-link"></i> Tạo URL Slug</button>
           <button data-action="reverse"><i class="fas fa-arrows-rotate"></i> Đảo ngược văn bản</button>
         </div>
       </div>
@@ -471,6 +82,7 @@ footer i{color:var(--accent)}
       <div class="dropdown" id="analyzeDropdown">
         <button class="btn dropdown-toggle"><i class="fas fa-chart-simple"></i><span class="lbl">Phân tích</span> <i class="fas fa-chevron-down" style="font-size:10px"></i></button>
         <div class="dropdown-menu">
+          <button data-action="find-replace"><i class="fas fa-search"></i> Tìm kiếm & Thay thế</button>
           <button data-action="frequency"><i class="fas fa-ranking-star"></i> Tần suất từ</button>
           <button data-action="stats-to-clipboard"><i class="fas fa-clipboard-list"></i> Sao chép thống kê</button>
         </div>
@@ -489,6 +101,8 @@ footer i{color:var(--accent)}
       <div class="stat"><div class="stat-value" id="uniqueWords">0</div><div class="stat-label">Từ độc nhất</div></div>
       <div class="stat"><div class="stat-value" id="avgWordLen">0</div><div class="stat-label">Độ dài từ TB</div></div>
       <div class="stat"><div class="stat-value" id="readingTime">0</div><div class="stat-label">Phút đọc</div></div>
+      <div class="stat"><div class="stat-value" id="speakingTime">0</div><div class="stat-label">Phút nói</div></div>
+      <div class="stat"><div class="stat-value" id="byteSize">0 B</div><div class="stat-label">Dung lượng</div></div>
     </div>
 
     <!-- char limit bar -->
@@ -514,6 +128,7 @@ footer i{color:var(--accent)}
         <div class="dropdown-menu" style="right:0;left:auto">
           <button data-action="export-json"><i class="fas fa-file-code"></i> Xuất JSON</button>
           <button data-action="export-txt"><i class="fas fa-file-lines"></i> Xuất TXT</button>
+          <button data-action="export-md"><i class="fas fa-file-invoice"></i> Xuất Markdown (.md)</button>
         </div>
       </div>
       <button class="btn btn-danger" id="clearAllBtn"><i class="fas fa-trash"></i><span class="lbl">Xóa tất cả</span></button>
@@ -565,6 +180,28 @@ footer i{color:var(--accent)}
   </div>
 </div>
 
+
+<!-- ============ MODAL: FIND & REPLACE ============ -->
+<div class="modal-backdrop" id="findReplaceModal">
+  <div class="modal">
+    <div class="modal-head">
+      <h3><i class="fas fa-search" style="color:var(--accent);margin-right:8px"></i>Tìm kiếm & Thay thế</h3>
+      <button class="modal-close"><i class="fas fa-times"></i></button>
+    </div>
+    <label style="font-size:13px;color:var(--text-muted);font-weight:500">Tìm từ khóa</label>
+    <input type="text" id="findInput" placeholder="Nhập từ hoặc cụm từ cần tìm..." style="margin-top:6px;margin-bottom:12px">
+    <label style="font-size:13px;color:var(--text-muted);font-weight:500">Thay thế bằng</label>
+    <input type="text" id="replaceInput" placeholder="Nhập nội dung thay thế..." style="margin-top:6px;margin-bottom:12px">
+    <label style="display:flex;align-items:center;gap:8px;font-size:13px;cursor:pointer;margin-top:4px">
+      <input type="checkbox" id="matchCaseCheck"> Phân biệt hoa / thường
+    </label>
+    <div class="modal-actions">
+      <button class="btn modal-close">Hủy</button>
+      <button class="btn btn-primary" id="doReplaceAllBtn"><i class="fas fa-sync-alt"></i> Thay thế tất cả</button>
+    </div>
+  </div>
+</div>
+
 <!-- ============ MODAL: FREQUENCY ============ -->
 <div class="modal-backdrop" id="freqModal">
   <div class="modal">
@@ -579,499 +216,11 @@ footer i{color:var(--accent)}
 <!-- ============ TOASTS ============ -->
 <div class="toast-container" id="toastContainer"></div>
 
-<script>
-(function(){
-  'use strict';
 
-  /* ============ DOM refs ============ */
-  const $ = id => document.getElementById(id);
-  const textarea = $('textInput');
-  const saveIndicator = $('saveIndicator');
-  const historyList = $('historyList');
-  const historyBadge = $('historyBadge');
-  const toastContainer = $('toastContainer');
-  const searchInput = $('searchHistory');
-  const themeIcon = $('themeIcon');
-  const limitFill = $('limitFill');
-  const limitLabel = $('limitLabel');
-  const limitValue = $('limitValue');
-
-  /* ============ State ============ */
-  const LS = {
-    history: 'pro_v2_history',
-    current: 'pro_v2_current',
-    dark: 'pro_v2_dark',
-    limit: 'pro_v2_limit'
-  };
-  let history = safeJSON(localStorage.getItem(LS.history), []);
-  let darkMode = localStorage.getItem(LS.dark) === '1';
-  let charLimit = parseInt(localStorage.getItem(LS.limit)) || 0;
-  let searchTerm = '';
-  let saveIndicatorTimer = null;
-
-  // undo/redo stacks
-  const undoStack = [];
-  const redoStack = [];
-  let lastSnapshot = '';
-
-  /* ============ Utils ============ */
-  function safeJSON(str, fallback){
-    try{ return str ? JSON.parse(str) : fallback; }catch(e){ return fallback; }
-  }
-  function escapeHtml(s){
-    return String(s).replace(/[&<>"']/g, m => ({
-      '&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'
-    }[m]));
-  }
-  function debounce(fn, ms){
-    let t; return function(...args){
-      clearTimeout(t); t = setTimeout(()=>fn.apply(this,args), ms);
-    };
-  }
-  function nowString(){
-    const d = new Date();
-    return d.toLocaleString('vi-VN', {hour:'2-digit',minute:'2-digit',day:'2-digit',month:'2-digit',year:'numeric'});
-  }
-  function uid(){ return Date.now().toString(36) + Math.random().toString(36).slice(2,7); }
-
-  /* ============ Toast ============ */
-  function showToast(msg, type='success'){
-    const icons = {success:'fa-check', error:'fa-xmark', info:'fa-info'};
-    const el = document.createElement('div');
-    el.className = 'toast ' + type;
-    el.innerHTML = `<div class="toast-icon"><i class="fas ${icons[type]||icons.info}"></i></div><div>${escapeHtml(msg)}</div>`;
-    toastContainer.appendChild(el);
-    setTimeout(()=>{
-      el.classList.add('out');
-      setTimeout(()=>el.remove(), 300);
-    }, 2400);
-  }
-
-  /* ============ Theme ============ */
-  function applyTheme(){
-    document.body.classList.toggle('dark', darkMode);
-    themeIcon.className = darkMode ? 'fas fa-moon' : 'fas fa-sun';
-    localStorage.setItem(LS.dark, darkMode ? '1' : '0');
-  }
-  $('themeToggle').addEventListener('click', ()=>{ darkMode = !darkMode; applyTheme(); });
-
-  /* ============ Text stats ============ */
-  function computeStats(text){
-    const trimmed = text.trim();
-    const words = trimmed ? trimmed.split(/\s+/).filter(Boolean) : [];
-    const wordCount = words.length;
-    const charCount = text.length;
-    const charNoSpace = text.replace(/\s/g,'').length;
-    const sentences = trimmed ? text.split(/[.!?…]+/).filter(s=>s.trim().length).length : 0;
-    const paragraphs = trimmed ? text.split(/\n\s*\n/).filter(p=>p.trim().length).length : 0;
-    const lower = words.map(w=>w.toLowerCase().replace(/[.,!?;:…"“”‘’()\[\]{}]/g,''));
-    const uniqueSet = new Set(lower.filter(Boolean));
-    const avgLen = wordCount ? (words.reduce((a,w)=>a+w.length,0)/wordCount) : 0;
-    const readMin = wordCount/200;
-    const speakMin = wordCount/130;
-    return {wordCount, charCount, charNoSpace, sentences, paragraphs, unique: uniqueSet.size, avgLen, readMin, speakMin, words: lower};
-  }
-
-  function updateStats(){
-    const text = textarea.value;
-    const s = computeStats(text);
-    $('wordCount').textContent = s.wordCount.toLocaleString('vi-VN');
-    $('charCount').textContent = s.charCount.toLocaleString('vi-VN');
-    $('charNoSpace').textContent = s.charNoSpace.toLocaleString('vi-VN');
-    $('sentenceCount').textContent = s.sentences.toLocaleString('vi-VN');
-    $('paragraphCount').textContent = s.paragraphs.toLocaleString('vi-VN');
-    $('uniqueWords').textContent = s.unique.toLocaleString('vi-VN');
-    $('avgWordLen').textContent = s.avgLen.toFixed(1);
-    $('readingTime').textContent = s.readMin < 1 && s.readMin > 0 ? '<1' : Math.round(s.readMin);
-
-    // char limit
-    if(charLimit > 0){
-      const pct = Math.min(100, (s.charCount / charLimit) * 100);
-      limitFill.style.width = pct + '%';
-      limitFill.classList.toggle('warning', pct >= 80 && pct < 100);
-      limitFill.classList.toggle('danger', pct >= 100);
-      limitLabel.textContent = `Giới hạn: ${charLimit.toLocaleString('vi-VN')} ký tự`;
-      limitValue.textContent = `${s.charCount.toLocaleString('vi-VN')} / ${charLimit.toLocaleString('vi-VN')}`;
-    } else {
-      limitFill.style.width = '0%';
-      limitLabel.textContent = 'Không giới hạn ký tự (nhấn để đặt)';
-      limitValue.textContent = `${s.charCount.toLocaleString('vi-VN')} / ∞`;
-    }
-  }
-
-  /* ============ Auto-save & Undo/Redo ============ */
-  function persist(){
-    localStorage.setItem(LS.current, textarea.value);
-    saveIndicator.classList.add('show');
-    clearTimeout(saveIndicatorTimer);
-    saveIndicatorTimer = setTimeout(()=>saveIndicator.classList.remove('show'), 1400);
-  }
-  function pushUndo(prev){
-    if(prev === lastSnapshot) return;
-    undoStack.push(prev);
-    if(undoStack.length > 100) undoStack.shift();
-    redoStack.length = 0;
-    lastSnapshot = textarea.value;
-  }
-  function undo(){
-    if(!undoStack.length) return showToast('Không có gì để hoàn tác', 'info');
-    const prev = undoStack.pop();
-    redoStack.push(textarea.value);
-    textarea.value = prev;
-    lastSnapshot = prev;
-    updateStats(); persist();
-    showToast('Đã hoàn tác', 'info');
-  }
-  function redo(){
-    if(!redoStack.length) return showToast('Không có gì để làm lại', 'info');
-    const next = redoStack.pop();
-    undoStack.push(textarea.value);
-    textarea.value = next;
-    lastSnapshot = next;
-    updateStats(); persist();
-    showToast('Đã làm lại', 'info');
-  }
-
-  /* ============ History render ============ */
-  function renderHistory(){
-    const term = searchTerm.toLowerCase().trim();
-    let filtered = history.slice();
-    // pinned first
-    filtered.sort((a,b)=>(b.pinned?1:0)-(a.pinned?1:0));
-    if(term){
-      filtered = filtered.filter(it =>
-        it.title.toLowerCase().includes(term) || it.text.toLowerCase().includes(term)
-      );
-    }
-    // badge
-    historyBadge.style.display = history.length ? 'inline-block' : 'none';
-    historyBadge.textContent = history.length;
-
-    if(!filtered.length){
-      historyList.innerHTML = `<div class="empty">
-        <i class="fas fa-inbox"></i>
-        <p>${term ? 'Không tìm thấy kết quả phù hợp' : 'Chưa có văn bản nào trong lịch sử'}</p>
-      </div>`;
-      return;
-    }
-
-    historyList.innerHTML = filtered.map(item => `
-      <div class="history-item ${item.pinned?'pinned':''}" data-id="${item.id}">
-        <div class="h-row1">
-          <div class="h-title">${item.pinned?'<i class="fas fa-thumbtack" style="color:var(--warning);font-size:11px"></i>':''}<span class="h-title-text">${escapeHtml(item.title)}</span></div>
-          <div class="h-actions">
-            <button class="fav ${item.pinned?'active':''}" data-act="fav" title="Ghim"><i class="fas fa-thumbtack"></i></button>
-            <button data-act="rename" title="Đổi tên"><i class="fas fa-pen"></i></button>
-            <button data-act="copy" title="Sao chép"><i class="fas fa-copy"></i></button>
-            <button data-act="restore" title="Khôi phục vào editor"><i class="fas fa-arrow-up-from-bracket"></i></button>
-            <button class="del" data-act="del" title="Xóa"><i class="fas fa-trash"></i></button>
-          </div>
-        </div>
-        <div class="h-preview">${escapeHtml(item.text.slice(0,160))}${item.text.length>160?'…':''}</div>
-        <div class="h-meta">
-          <span><i class="far fa-clock"></i> ${escapeHtml(item.time)}</span>
-          <span><i class="fas fa-font"></i> ${item.wordCount.toLocaleString('vi-VN')} từ</span>
-          <span><i class="fas fa-text-height"></i> ${item.charCount.toLocaleString('vi-VN')} ký tự</span>
-        </div>
-      </div>
-    `).join('');
-  }
-
-  /* History delegation */
-  historyList.addEventListener('click', e => {
-    const btn = e.target.closest('button[data-act]');
-    if(!btn) return;
-    const row = btn.closest('.history-item');
-    const id = row.dataset.id;
-    const idx = history.findIndex(h=>h.id===id);
-    if(idx === -1) return;
-    const act = btn.dataset.act;
-
-    if(act === 'copy'){
-      navigator.clipboard.writeText(history[idx].text)
-        .then(()=>showToast('Đã sao chép văn bản'))
-        .catch(()=>showToast('Không thể sao chép','error'));
-    }
-    else if(act === 'restore'){
-      textarea.value = history[idx].text;
-      pushUndo(lastSnapshot);
-      updateStats(); persist();
-      window.scrollTo({top:0,behavior:'smooth'});
-      showToast('Đã khôi phục vào editor');
-    }
-    else if(act === 'del'){
-      if(confirm('Xóa mục này khỏi lịch sử?')){
-        history.splice(idx,1);
-        saveHistory();
-        renderHistory();
-        showToast('Đã xóa mục','info');
-      }
-    }
-    else if(act === 'fav'){
-      history[idx].pinned = !history[idx].pinned;
-      saveHistory();
-      renderHistory();
-      showToast(history[idx].pinned ? 'Đã ghim' : 'Đã bỏ ghim', 'info');
-    }
-    else if(act === 'rename'){
-      const titleEl = row.querySelector('.h-title-text');
-      const cur = history[idx].title;
-      const input = document.createElement('input');
-      input.type = 'text'; input.value = cur; input.maxLength = 100;
-      titleEl.replaceWith(input); input.focus(); input.select();
-
-      const commit = () => {
-        const val = input.value.trim() || 'Văn bản';
-        history[idx].title = val;
-        saveHistory(); renderHistory();
-        showToast('Đã đổi tên');
-      };
-      input.addEventListener('blur', commit);
-      input.addEventListener('keydown', ev => {
-        if(ev.key === 'Enter'){ ev.preventDefault(); input.blur(); }
-        if(ev.key === 'Escape'){ renderHistory(); }
-      });
-    }
-  });
-
-  function saveHistory(){ localStorage.setItem(LS.history, JSON.stringify(history)); }
-  const saveHistoryDebounced = debounce(saveHistory, 300);
-
-  /* ============ Save modal ============ */
-  const saveModal = $('saveModal');
-  const saveTitleInput = $('saveTitleInput');
-
-  function openSaveModal(){
-    const text = textarea.value.trim();
-    if(!text) return showToast('Vui lòng nhập văn bản trước', 'error');
-    saveTitleInput.value = `Văn bản ${new Date().toLocaleString('vi-VN')}`;
-    saveModal.classList.add('open');
-    setTimeout(()=>{ saveTitleInput.focus(); saveTitleInput.select(); }, 150);
-  }
-  function closeModal(el){ el.classList.remove('open'); }
-
-  $('saveHistoryBtn').addEventListener('click', openSaveModal);
-  $('saveConfirmBtn').addEventListener('click', ()=>{
-    const text = textarea.value.trim();
-    const title = saveTitleInput.value.trim() || 'Văn bản';
-    const s = computeStats(text);
-    history.unshift({
-      id: uid(),
-      title,
-      text,
-      wordCount: s.wordCount,
-      charCount: s.charCount,
-      time: nowString(),
-      pinned: false
-    });
-    if(history.length > 200) history.length = 200;
-    saveHistory();
-    renderHistory();
-    closeModal(saveModal);
-    showToast('Đã lưu vào lịch sử');
-  });
-
-  /* ============ Modal close ============ */
-  document.querySelectorAll('.modal-backdrop').forEach(m => {
-    m.addEventListener('click', e => { if(e.target === m) closeModal(m); });
-    m.querySelectorAll('.modal-close').forEach(b => b.addEventListener('click', ()=>closeModal(m)));
-  });
-  document.addEventListener('keydown', e => {
-    if(e.key === 'Escape') document.querySelectorAll('.modal-backdrop.open').forEach(closeModal);
-  });
-
-  /* ============ Help modal ============ */
-  $('helpBtn').addEventListener('click', ()=>$('helpModal').classList.add('open'));
-
-  /* ============ Frequency modal ============ */
-  function openFrequency(){
-    const text = textarea.value.trim();
-    if(!text) return showToast('Chưa có văn bản để phân tích', 'error');
-    const s = computeStats(text);
-    const map = new Map();
-    s.words.filter(w=>w.length>1).forEach(w => map.set(w, (map.get(w)||0)+1));
-    const sorted = [...map.entries()].sort((a,b)=>b[1]-a[1]).slice(0,30);
-    if(!sorted.length) return showToast('Không đủ dữ liệu', 'info');
-    const max = sorted[0][1];
-    $('freqList').innerHTML = sorted.map(([w,c])=>`
-      <div class="freq-item">
-        <div class="freq-word">${escapeHtml(w)}</div>
-        <div class="freq-bar"><div style="width:${(c/max)*100}%"></div></div>
-        <div class="freq-count">${c}</div>
-      </div>
-    `).join('');
-    $('freqModal').classList.add('open');
-  }
-
-  /* ============ Toolbar actions ============ */
-  function applyTransform(fn){
-    const prev = textarea.value;
-    const next = fn(prev);
-    if(next === prev) return showToast('Không có gì thay đổi', 'info');
-    pushUndo(prev);
-    textarea.value = next;
-    updateStats(); persist();
-  }
-
-  const transforms = {
-    upper: t => t.toLocaleUpperCase('vi'),
-    lower: t => t.toLocaleLowerCase('vi'),
-    capitalize: t => t.replace(/\b\p{L}/gu, c => c.toLocaleUpperCase('vi')),
-    sentence: t => t.toLowerCase().replace(/(^\s*\p{L}|[.!?…]\s+\p{L})/gu, c => c.toLocaleUpperCase('vi')),
-    trim: t => t.replace(/[ \t]+/g,' ').replace(/ *\n */g,'\n').replace(/\n{3,}/g,'\n\n').trim(),
-    rmlines: t => t.replace(/\s*\n\s*/g, ' ').replace(/\s+/g,' ').trim(),
-    rmaccents: t => t.normalize('NFD').replace(/[\u0300-\u036f]/g,'').replace(/đ/g,'d').replace(/Đ/g,'D'),
-    reverse: t => t.split('\n').map(line => [...line].reverse().join('')).join('\n')
-  };
-
-  // dropdown toggles
-  document.querySelectorAll('.dropdown').forEach(dd => {
-    const toggle = dd.querySelector('.dropdown-toggle');
-    if(!toggle) return;
-    toggle.addEventListener('click', e => {
-      e.stopPropagation();
-      const wasOpen = dd.classList.contains('open');
-      document.querySelectorAll('.dropdown.open').forEach(o=>o.classList.remove('open'));
-      if(!wasOpen) dd.classList.add('open');
-    });
-  });
-  document.addEventListener('click', ()=>document.querySelectorAll('.dropdown.open').forEach(o=>o.classList.remove('open')));
-
-  // handle dropdown menu actions
-  document.addEventListener('click', e => {
-    const btn = e.target.closest('.dropdown-menu button[data-action]');
-    if(!btn) return;
-    const act = btn.dataset.action;
-    if(transforms[act]) applyTransform(transforms[act]);
-    else if(act === 'frequency') openFrequency();
-    else if(act === 'stats-to-clipboard') copyStats();
-    else if(act === 'export-json') exportJSON();
-    else if(act === 'export-txt') exportTXT();
-  });
-
-  function copyStats(){
-    const s = computeStats(textarea.value);
-    const txt = `THỐNG KÊ VĂN BẢN
-─────────────────────
-Từ: ${s.wordCount}
-Ký tự: ${s.charCount}
-Ký tự (không dấu cách): ${s.charNoSpace}
-Câu: ${s.sentences}
-Đoạn: ${s.paragraphs}
-Từ độc nhất: ${s.unique}
-Độ dài từ trung bình: ${s.avgLen.toFixed(1)}
-Thời gian đọc: ~${s.readMin.toFixed(1)} phút
-Thời gian nói: ~${s.speakMin.toFixed(1)} phút`;
-    navigator.clipboard.writeText(txt)
-      .then(()=>showToast('Đã sao chép thống kê'))
-      .catch(()=>showToast('Không thể sao chép','error'));
-  }
-
-  /* ============ Export ============ */
-  function download(filename, content, type){
-    const blob = new Blob([content], {type});
-    const url = URL.createObjectURL(blob);
-    const a = document.createElement('a');
-    a.href = url; a.download = filename; a.click();
-    URL.revokeObjectURL(url);
-  }
-  function exportJSON(){
-    if(!history.length) return showToast('Lịch sử trống','info');
-    const date = new Date().toISOString().slice(0,10);
-    download(`word_history_${date}.json`, JSON.stringify(history,null,2), 'application/json');
-    showToast('Đã xuất JSON');
-  }
-  function exportTXT(){
-    if(!history.length) return showToast('Lịch sử trống','info');
-    const date = new Date().toISOString().slice(0,10);
-    const content = history.map((h,i)=>
-      `#${i+1} — ${h.title}\n[${h.time}] ${h.wordCount} từ, ${h.charCount} ký tự\n${'─'.repeat(40)}\n${h.text}\n`
-    ).join('\n\n');
-    download(`word_history_${date}.txt`, content, 'text/plain');
-    showToast('Đã xuất TXT');
-  }
-
-  /* ============ Buttons ============ */
-  $('copyBtn').addEventListener('click', ()=>{
-    const t = textarea.value;
-    if(!t.trim()) return showToast('Không có nội dung', 'error');
-    navigator.clipboard.writeText(t)
-      .then(()=>showToast('Đã sao chép'))
-      .catch(()=>showToast('Không thể sao chép','error'));
-  });
-  $('clearBtn').addEventListener('click', ()=>{
-    if(!textarea.value.trim()) return;
-    if(confirm('Xóa văn bản hiện tại?')){
-      pushUndo(textarea.value);
-      textarea.value = '';
-      updateStats(); persist();
-      showToast('Đã xóa','info');
-    }
-  });
-  $('undoBtn').addEventListener('click', undo);
-  $('redoBtn').addEventListener('click', redo);
-  $('clearAllBtn').addEventListener('click', ()=>{
-    if(!history.length) return showToast('Lịch sử đã trống', 'info');
-    if(confirm('Xóa toàn bộ lịch sử? Hành động này không thể hoàn tác.')){
-      history = [];
-      saveHistory();
-      renderHistory();
-      showToast('Đã xóa toàn bộ lịch sử','info');
-    }
-  });
-
-  /* ============ Char limit click ============ */
-  limitLabel.addEventListener('click', ()=>{
-    const v = prompt('Đặt giới hạn ký tự (0 = không giới hạn):', charLimit || 0);
-    if(v === null) return;
-    const n = parseInt(v);
-    if(isNaN(n) || n < 0) return showToast('Giá trị không hợp lệ','error');
-    charLimit = n;
-    localStorage.setItem(LS.limit, charLimit);
-    updateStats();
-  });
-
-  /* ============ Search ============ */
-  const debouncedSearch = debounce(()=>renderHistory(), 200);
-  searchInput.addEventListener('input', e => { searchTerm = e.target.value; debouncedSearch(); });
-
-  /* ============ Input handling ============ */
-  const persistDebounced = debounce(persist, 400);
-  textarea.addEventListener('input', ()=>{
-    pushUndo(lastSnapshot);
-    updateStats();
-    persistDebounced();
-  });
-
-  /* ============ Keyboard shortcuts ============ */
-  document.addEventListener('keydown', e => {
-    const ctrl = e.ctrlKey || e.metaKey;
-    if(!ctrl) return;
-    const k = e.key.toLowerCase();
-    if(k === 's'){ e.preventDefault(); openSaveModal(); }
-    else if(k === 'c' && e.shiftKey){ e.preventDefault(); $('copyBtn').click(); }
-    else if(k === 'z' && !e.shiftKey){ e.preventDefault(); undo(); }
-    else if(k === 'y' || (k === 'z' && e.shiftKey)){ e.preventDefault(); redo(); }
-    else if(k === 'k'){ e.preventDefault(); $('clearBtn').click(); }
-    else if(k === '/'){ e.preventDefault(); $('helpModal').classList.add('open'); }
-  });
-
-  /* ============ Init ============ */
-  function init(){
-    applyTheme();
-    textarea.value = localStorage.getItem(LS.current) || '';
-    lastSnapshot = textarea.value;
-    updateStats();
-    renderHistory();
-    // welcome
-    if(!history.length && textarea.value.trim()){
-      setTimeout(()=>showToast('Văn bản cũ đã được phục hồi','info'), 600);
-    }
-  }
-  init();
-
-  window.addEventListener('beforeunload', ()=>persist());
-})();
-</script>
+  <!-- Modular Scripts -->
+  <script src="js/stats.js"></script>
+  <script src="js/transforms.js"></script>
+  <script src="js/speech.js"></script>
+  <script src="js/app.js"></script>
 </body>
 </html>
